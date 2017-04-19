@@ -21,7 +21,6 @@ export const DEFAULT_CONFIG = [
     dateFormat: 'YYYY-MM-DD HH:mm:ss',
   },
   NEW_STYLE_DEFAULT
-
 ];
 
 export class ColumnsStylesManager {

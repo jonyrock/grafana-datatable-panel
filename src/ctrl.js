@@ -163,6 +163,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
       '80%', '90%', '100%', '110%', '120%', '130%',
       '150%', '160%', '180%', '200%', '220%', '250%'
     ];
+    // TODO: move to columnStyles
     this.colorModes = [
       {
         text: 'Disabled',
@@ -223,12 +224,10 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
       if (!this.table) {
         return [];
       }
-      return _.map(this.table.columns, function(col) {
-        return col.text;
-      });
+      return _.map(this.table.columns, col => col.text);
     };
 
-    if (this.panel.styles === void 0) {
+    if (this.panel.styles === undefined) {
       this.panel.styles = this.panel.columns;
       this.panel.columns = this.panel.fields;
       delete this.panel.columns;
@@ -487,13 +486,12 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     this.addColumnSegment.value = plusButton.value;
   }
 
-
-
   setUnitFormat(column, subItem) {
     column.unit = subItem.value;
     this.render();
   }
 
+  // TODO: rm render and watch vars
   invertColorOrder(index) {
     this.panel.columnsStylesManager.invertColorOrder(index);
     this.render();
