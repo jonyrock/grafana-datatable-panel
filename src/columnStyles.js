@@ -1,24 +1,27 @@
 import kbn from 'app/core/utils/kbn';
 
+const NEW_STYLE_DEFAULT = {
+  unit: 'short',
+  type: 'number',
+  decimals: 2,
+  colors: [
+    "rgba(245, 54, 54, 0.9)",
+    "rgba(237, 129, 40, 0.89)",
+    "rgba(50, 172, 45, 0.97)"
+  ],
+  colorMode: null,
+  pattern: '/.*/',
+  thresholds: [],
+};
+
 export const DEFAULT_CONFIG = [
   {
     type: 'date',
     pattern: 'Time',
     dateFormat: 'YYYY-MM-DD HH:mm:ss',
   },
-  {
-    unit: 'short',
-    type: 'number',
-    decimals: 2,
-    colors: [
-      "rgba(245, 54, 54, 0.9)",
-      "rgba(237, 129, 40, 0.89)",
-      "rgba(50, 172, 45, 0.97)"
-    ],
-    colorMode: null,
-    pattern: '/.*/',
-    thresholds: [],
-  }
+  NEW_STYLE_DEFAULT
+
 ];
 
 export class ColumnsStylesManager {
@@ -40,6 +43,17 @@ export class ColumnsStylesManager {
       }
     }
     return undefined;
+  }
+
+  addColumnStyle() {
+    this.styles.push(angular.copy(NEW_STYLE_DEFAULT));
+  }
+
+  removeColumnStyle(style) {
+    var index = this.styles.indexOf(style);
+    if(index > -1) {
+      this.styles.splice(index, 1);
+    }
   }
 
   invertColorOrder(index) {

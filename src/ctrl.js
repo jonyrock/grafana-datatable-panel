@@ -487,23 +487,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     this.addColumnSegment.value = plusButton.value;
   }
 
-  addColumnStyle() {
-    var columnStyleDefaults = {
-      unit: 'short',
-      type: 'number',
-      decimals: 2,
-      colors: ["rgba(245, 54, 54, 0.9)", "rgba(237, 129, 40, 0.89)", "rgba(50, 172, 45, 0.97)"],
-      colorMode: null,
-      pattern: '/.*/',
-      dateFormat: 'YYYY-MM-DD HH:mm:ss',
-      thresholds: [],
-    };
-    this.panel.styles.push(angular.copy(columnStyleDefaults));
-  }
 
-  removeColumnStyle(style) {
-    this.panel.styles = _.without(this.panel.styles, style);
-  }
 
   setUnitFormat(column, subItem) {
     column.unit = subItem.value;
