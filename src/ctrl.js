@@ -72,7 +72,7 @@ const panelDefaults = {
       type: 'date',
       pattern: 'Time',
       dateFormat: 'YYYY-MM-DD HH:mm:ss',
-      },
+    },
     {
       unit: 'short',
       type: 'number',
@@ -81,8 +81,8 @@ const panelDefaults = {
       colorMode: null,
       pattern: '/.*/',
       thresholds: [],
-      }
-    ],
+    }
+  ],
   columns: [],
   scroll: false,
   scrollHeight: 'default',

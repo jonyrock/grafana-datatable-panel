@@ -9,6 +9,7 @@ export class DatatableRenderer {
     this.colorState = {};
     this.panel = panel;
     this.table = table;
+
     this.isUtc = isUtc;
     this.sanitize = sanitize;
   }
@@ -121,14 +122,21 @@ export class DatatableRenderer {
    * @return {[type]}          [description]
    */
   formatColumnValue(colIndex, value) {
+
     if (this.formatters[colIndex]) {
       return this.formatters[colIndex](value);
     }
 
     for (let i = 0; i < this.panel.styles.length; i++) {
       let style = this.panel.styles[i];
+      // we don't process hidden type on this stage
+      // the column should be removed before
+      if(style.type === "hidden") {
+        continue;
+      }
       let column = this.table.columns[colIndex];
       var regex = kbn.stringToJsRegex(style.pattern);
+
       if (column.text.match(regex)) {
         this.formatters[colIndex] = this.createColumnFormatter(style, column);
         return this.formatters[colIndex](value);
@@ -470,19 +478,20 @@ export class DatatableRenderer {
   }
 
   renderValues() {
-      let rows = [];
+    let rows = [];
 
-      for (var y = 0; y < this.table.rows.length; y++) {
-        let row = this.table.rows[y];
-        let new_row = [];
-        for (var i = 0; i < this.table.columns.length; i++) {
-          new_row.push(this.formatColumnValue(i, row[i]));
-        }
-        rows.push(new_row);
+    for (var y = 0; y < this.table.rows.length; y++) {
+      let row = this.table.rows[y];
+      let newRow = [];
+      for (var i = 0; i < this.table.columns.length; i++) {
+        newRow.push(this.formatColumnValue(i, row[i]));
       }
-      return {
-          columns: this.table.columns,
-          rows: rows,
-      };
+      rows.push(newRow);
+    }
+
+    return {
+      columns: this.table.columns,
+      rows: rows,
+    };
   }
 }

@@ -2,6 +2,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import flatten from 'app/core/utils/flatten';
+import kbn from 'app/core/utils/kbn';
 import TimeSeries from 'app/core/time_series2';
 import TableModel from 'app/core/table_model';
 
@@ -40,20 +41,36 @@ transformers.timeseries_to_columns = {
     // group by time
     var points = {};
 
+    function isHidden(columnName) {
+      for (let i = 0; i < panel.styles.length; i++) {
+        let style = panel.styles[i];
+        var regex = kbn.stringToJsRegex(style.pattern);
+        if (columnName.match(regex)) {
+          return style.type === "hidden";
+        }
+      }
+      return false;
+    }
+
     for (var i = 0; i < data.length; i++) {
+
       var series = data[i];
+
+      if(isHidden(series.target)) {
+        continue;
+      }
+
       model.columns.push({text: series.target});
 
       for (var y = 0; y < series.datapoints.length; y++) {
         var dp = series.datapoints[y];
+        console.log(dp);
         var timeKey = dp[1].toString();
 
         if (!points[timeKey]) {
-          points[timeKey] = {time: dp[1]};
-          points[timeKey][i] = dp[0];
-        } else {
-          points[timeKey][i] = dp[0];
+          points[timeKey] = [dp[1]];
         }
+        points[timeKey].push(dp[0]);
       }
     }
 
@@ -61,12 +78,7 @@ transformers.timeseries_to_columns = {
       var point = points[time];
       var values = [point.time];
 
-      for (let i = 0; i < data.length; i++) {
-        var value = point[i];
-        values.push(value);
-      }
-
-      model.rows.push(values);
+      model.rows.push(point);
     }
   }
 };
