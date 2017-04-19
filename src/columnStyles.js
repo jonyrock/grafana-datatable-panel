@@ -42,4 +42,11 @@ export class ColumnsStylesManager {
     return undefined;
   }
 
+  invertColorOrder(index) {
+    var ref = this.styles[index].colors;
+    var copy = ref[0];
+    ref[0] = ref[2];
+    ref[2] = copy;
+  }
+
 }

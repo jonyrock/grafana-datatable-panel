@@ -286,7 +286,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     }
     this.dataLoaded = true;
     this.http = $http;
-    
+
     this.panel.columnsStylesManager = new ColumnStyles.ColumnsStylesManager(
       this.panel.styles
     );
@@ -511,10 +511,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
   }
 
   invertColorOrder(index) {
-    var ref = this.panel.styles[index].colors;
-    var copy = ref[0];
-    ref[0] = ref[2];
-    ref[2] = copy;
+    this.panel.columnsStylesManager.invertColorOrder(index);
     this.render();
   }
 
