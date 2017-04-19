@@ -62,7 +62,7 @@ import {
 
 import { DatatableRenderer } from './renderer';
 
-import * as ColumnStyles from './columnStyles';
+import * as ColumnStyles from './column-styles';
 
 const panelDefaults = {
   targets: [{}],
