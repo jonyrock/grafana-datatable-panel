@@ -1,5 +1,1 @@
-import {DatatablePanelCtrl} from  './ctrl';
-
-export {
-  DatatablePanelCtrl as PanelCtrl
-};
+export { DatatablePanelCtrl as PanelCtrl } from  './ctrl';

@@ -469,7 +469,7 @@ export class DatatableRenderer {
     }
   }
 
-  render_values() {
+  renderValues() {
       let rows = [];
 
       for (var y = 0; y < this.table.rows.length; y++) {

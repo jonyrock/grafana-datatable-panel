@@ -43,7 +43,8 @@ paging active button: #BEBEBE
 paging button hover: #C0C0C0
 
 with these modifications:
-.dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
   color: #1fb2e5 !important;
 table.dataTable tfoot th {
   color: #1FB2E5;
@@ -254,6 +255,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
         }
     });
 
+    // TODO: move to a new themes module
     // basic datatables theme
     // alternative themes are disabled since they affect all datatable panels on same page currently
     switch (this.panel.datatableTheme) {
@@ -283,7 +285,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
         System.import(this.getPanelPath() +  'libs/datatables.net-jqui/css/dataTables.jqueryui.min.css!');
         System.import(this.getPanelPath() +  'css/jquery-ui-smoothness.css!');
         break;
-    default:
+      default:
         System.import(this.getPanelPath() +  'libs/datatables.net-dt/css/jquery.dataTables.min.css!');
         if (grafanaBootData.user.lightTheme) {
           System.import(this.getPanelPath() + this.panel.themeOptions.light + '!css');
@@ -302,11 +304,11 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
   }
 
   onInitPanelActions(actions) {
-      actions.push({
-        text: 'Export CSV',
-        click: 'ctrl.exportCsv()'
-      });
-    }
+    actions.push({
+      text: 'Export CSV',
+      click: 'ctrl.exportCsv()'
+    });
+  }
 
   // setup the editor
   onInitEditMode() {
@@ -390,8 +392,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
         if (typeof tmpPanelHeight === 'undefined') {
           tmpPanelHeight = 250;
         }
-      }
-      else {
+      } else {
         // convert to numeric value
         tmpPanelHeight = tmpPanelHeight.replace("px","");
       }
@@ -405,7 +406,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
 
   exportCsv() {
     var renderer = new DatatableRenderer(this.panel, this.table, this.dashboard.isTimezoneUtc(), this.$sanitize);
-    FileExport.exportTableDataToCsv(renderer.render_values());
+    FileExport.exportTableDataToCsv(renderer.renderValues());
   }
 
   link(scope, elem, attrs, ctrl) {
@@ -453,6 +454,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     this.panel.columns = [];
     this.render();
   }
+
   removeColumn(column) {
     this.panel.columns = _.without(this.panel.columns, column);
     this.render();
@@ -486,17 +488,17 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
   }
 
   addColumnStyle() {
-      var columnStyleDefaults = {
-        unit: 'short',
-        type: 'number',
-        decimals: 2,
-        colors: ["rgba(245, 54, 54, 0.9)", "rgba(237, 129, 40, 0.89)", "rgba(50, 172, 45, 0.97)"],
-        colorMode: null,
-        pattern: '/.*/',
-        dateFormat: 'YYYY-MM-DD HH:mm:ss',
-        thresholds: [],
-      };
-      this.panel.styles.push(angular.copy(columnStyleDefaults));
+    var columnStyleDefaults = {
+      unit: 'short',
+      type: 'number',
+      decimals: 2,
+      colors: ["rgba(245, 54, 54, 0.9)", "rgba(237, 129, 40, 0.89)", "rgba(50, 172, 45, 0.97)"],
+      colorMode: null,
+      pattern: '/.*/',
+      dateFormat: 'YYYY-MM-DD HH:mm:ss',
+      thresholds: [],
+    };
+    this.panel.styles.push(angular.copy(columnStyleDefaults));
   }
   removeColumnStyle(style) {
     this.panel.styles = _.without(this.panel.styles, style);
