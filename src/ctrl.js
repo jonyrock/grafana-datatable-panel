@@ -62,27 +62,14 @@ import {
 
 import { DatatableRenderer } from './renderer';
 
+import * as ColumnStyles from './columnStyles';
+
 const panelDefaults = {
   targets: [{}],
   transform: 'timeseries_to_columns',
   rowsPerPage: 5,
   showHeader: true,
-  styles: [
-    {
-      type: 'date',
-      pattern: 'Time',
-      dateFormat: 'YYYY-MM-DD HH:mm:ss',
-    },
-    {
-      unit: 'short',
-      type: 'number',
-      decimals: 2,
-      colors: ["rgba(245, 54, 54, 0.9)", "rgba(237, 129, 40, 0.89)", "rgba(50, 172, 45, 0.97)"],
-      colorMode: null,
-      pattern: '/.*/',
-      thresholds: [],
-    }
-  ],
+  styles: ColumnStyles.DEFAULT_CONFIG, // TODO: rename it
   columns: [],
   scroll: false,
   scrollHeight: 'default',
@@ -250,12 +237,12 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     _.defaults(this.panel, panelDefaults);
 
     System.config({
-        paths: {
-            "datatables.net": this.panelPath + "libs/datatables.net/js/jquery.dataTables.min",
-            "datatables.net-bs" : this.panelPath + "libs/datatables.net-bs/js/dataTables.bootstrap.min",
-            "datatables.net-jqui" : this.panelPath + "libs/datatables.net-jqui/js/dataTables.jqueryui.min",
-            "datatables.net-zf" : this.panelPath + "libs/datatables.net-zf/js/dataTables.foundation.min",
-        }
+      paths: {
+        "datatables.net": this.panelPath + "libs/datatables.net/js/jquery.dataTables.min",
+        "datatables.net-bs" : this.panelPath + "libs/datatables.net-bs/js/dataTables.bootstrap.min",
+        "datatables.net-jqui" : this.panelPath + "libs/datatables.net-jqui/js/dataTables.jqueryui.min",
+        "datatables.net-zf" : this.panelPath + "libs/datatables.net-zf/js/dataTables.foundation.min",
+      }
     });
 
     // TODO: move to a new themes module
@@ -299,6 +286,10 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     }
     this.dataLoaded = true;
     this.http = $http;
+    
+    this.panel.columnsStylesManager = new ColumnStyles.ColumnsStylesManager(
+      this.panel.styles
+    );
     this.events.on('data-received', this.onDataReceived.bind(this));
     this.events.on('data-error', this.onDataError.bind(this));
     this.events.on('data-snapshot-load', this.onDataReceived.bind(this));

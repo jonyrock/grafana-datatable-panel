@@ -122,28 +122,15 @@ export class DatatableRenderer {
    * @return {[type]}          [description]
    */
   formatColumnValue(colIndex, value) {
-
-    if (this.formatters[colIndex]) {
-      return this.formatters[colIndex](value);
-    }
-
-    for (let i = 0; i < this.panel.styles.length; i++) {
-      let style = this.panel.styles[i];
-      // we don't process hidden type on this stage
-      // the column should be removed before
-      if(style.type === "hidden") {
-        continue;
-      }
+    if(!this.formatters[colIndex]) {
       let column = this.table.columns[colIndex];
-      var regex = kbn.stringToJsRegex(style.pattern);
-
-      if (column.text.match(regex)) {
+      var style = this.panel.columnsStylesManager.findStyle(column.text);
+      if(style) {
         this.formatters[colIndex] = this.createColumnFormatter(style, column);
-        return this.formatters[colIndex](value);
+      } else {
+        this.formatters[colIndex] = this.defaultCellFormatter;
       }
     }
-
-    this.formatters[colIndex] = this.defaultCellFormatter;
     return this.formatters[colIndex](value);
   }
 
