@@ -217,7 +217,6 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     var datatableOptionsPath = thisPanelPath +
       'partials/datatables.options.html';
     this.addEditorTab('Datatable Options', datatableOptionsPath, 3);
-    console.log(this);
   }
 
   get panelPath() {

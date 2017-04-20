@@ -26,7 +26,6 @@
     "bootstrap": "^3.3.7",
     "datatables.net-zf": "^1.10.13",
     "foundation": "^5.5.3",
-    "datatables.net-jqui": "^1.10.13",
-    "jquery-sortable": "^0.9.13"
+    "datatables.net-jqui": "^1.10.13"
   }
 }

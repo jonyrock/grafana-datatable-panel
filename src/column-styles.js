@@ -1,5 +1,12 @@
 import kbn from 'app/core/utils/kbn';
 
+Array.prototype.swap = function(p, q) {
+  var t = this[p];
+  this[p] = this[q];
+  this[q] = t;
+  return this;
+};
+
 const NEW_STYLE_DEFAULT = {
   unit: 'short',
   type: 'number',
@@ -48,18 +55,22 @@ export class ColumnsStylesManager {
     this.styles.push(angular.copy(NEW_STYLE_DEFAULT));
   }
 
-  removeColumnStyle(style) {
-    var index = this.styles.indexOf(style);
-    if(index > -1) {
-      this.styles.splice(index, 1);
-    }
+  removeColumnStyle(index) {
+    this.styles.splice(index, 1);
+  }
+
+  moveUpColumnStyle(index) {
+    console.log('moveUpColumnStyle' + index);
+    this.styles.swap(index - 1, index);
+  }
+
+  moveDownColumnStyle(index) {
+    console.log('moveDownColumnStyle' + index);
+    this.styles.swap(index + 1, index);
   }
 
   invertColorOrder(index) {
-    var ref = this.styles[index].colors;
-    var copy = ref[0];
-    ref[0] = ref[2];
-    ref[2] = copy;
+    this.styles[index].colors.swap(0, 2);
   }
 
 }

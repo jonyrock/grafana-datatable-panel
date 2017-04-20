@@ -4,7 +4,11 @@
     <div class="gf-form">
       <label class="gf-form-label width-10">Table Transform</label>
       <div class="gf-form-select-wrapper max-width-15">
-        <select class="gf-form-input" ng-model="ctrl.panel.transform" ng-options="k as v.description for (k, v) in ctrl.transformers" ng-change="ctrl.transformChanged()"></select>
+        <select
+					class="gf-form-input" ng-model="ctrl.panel.transform"
+					ng-options="k as v.description for (k, v) in ctrl.transformers"
+					ng-change="ctrl.transformChanged()"
+				/>
       </div>
     </div>
     <div class="gf-form-inline">
@@ -28,10 +32,36 @@
 	<div class="section gf-form-group">
 		<h5 class="section-heading">Column Styles</h5>
 		<div ng-repeat="style in ctrl.panel.styles">
+
 			<div class="gf-form-inline">
+
+				<div class="gf-form" ng-if="!($first && $last)">
+					<label class="gf-form-label sort-button">
+						<a
+							class="pointer disabled"
+							ng-if="!$first"
+							ng-click="ctrl.panel.columnsStylesManager.moveUpColumnStyle($index)"
+						>
+							<i class="fa fa-caret-up"></i>
+						</a> <br/>
+						<a
+							class="pointer"
+							ng-if="!$last"
+							ng-click="ctrl.panel.columnsStylesManager.moveDownColumnStyle($index)"
+						>
+							<i class="fa fa-caret-down"></i>
+						</a>
+					</label>
+				</div>
+
 				<div class="gf-form">
-					<label class="gf-form-label">Name or regex</label>
-					<input type="text" class="gf-form-input" ng-model="style.pattern" bs-typeahead="ctrl.getColumnNames" ng-blur="ctrl.render()" data-min-length=0 data-items=100 ng-model-onblur>
+					<label class="gf-form-label"> Name or regex</label>
+					<input
+						type="text" class="gf-form-input"
+						ng-model="style.pattern" bs-typeahead="ctrl.getColumnNames"
+						ng-blur="ctrl.render()" data-min-length="0" data-items="80"
+						ng-model-onblur
+					/>
 				</div>
 				<div class="gf-form">
 					<label class="gf-form-label">Type</label>
@@ -43,17 +73,24 @@
 					<label class="gf-form-label">Format</label>
 					<metric-segment-model property="style.dateFormat" options="ctrl.dateFormats" on-change="ctrl.render()" custom="true"></metric-segment-model>
 				</div>
-				<gf-form-switch class="gf-form" label-class="width-8" ng-if="style.type === 'string'" label="Sanitize HTML" checked="style.sanitize" change="ctrl.render()"></gf-form-switch>
+				<gf-form-switch
+					class="gf-form" label-class="width-8"
+					ng-if="style.type === 'string'" label="Sanitize HTML"
+					checked="style.sanitize" change="ctrl.render()"
+				/>
 				<div class="gf-form gf-form--grow">
 					<div class="gf-form-label gf-form-label--grow"></div>
 				</div>
 				<div class="gf-form">
 				  <label class="gf-form-label">
-				    <a class="pointer" ng-click="ctrl.panel.columnsStylesManager.removeColumnStyle(style)">
+				    <a class="pointer"
+							ng-click="ctrl.panel.columnsStylesManager.removeColumnStyle($index)"
+						>
 				      <i class="fa fa-trash"></i>
 				    </a>
 				  </label>
 				</div>
+
 			</div>
 
 			<div class="gf-form-inline" ng-if="style.type === 'number'">
@@ -80,9 +117,12 @@
 
       <div class="gf-form-inline" ng-if="style.type === 'number' && style.colorMode != null">
         <div class="gf-form max-width-17 offset-width-8">
-
           <label class="gf-form-label width-8"> Thresholds<tip>Comma separated values</tip></label>
-          <input type="text" class="gf-form-input" ng-model="style.thresholds" placeholder="50,80" ng-blur="ctrl.render()" array-join ng-model-onblur>
+          <input
+						type="text" class="gf-form-input"
+						ng-model="style.thresholds" placeholder="50,80"
+						ng-blur="ctrl.render()" array-join ng-model-onblur
+					>
         </div>
         <div class="gf-form">
           <label class="gf-form-label width-5">Colors</label>
