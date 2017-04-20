@@ -91,9 +91,11 @@ const panelDefaults = {
 
 export class DatatablePanelCtrl extends MetricsPanelCtrl {
 
-  constructor($scope, $injector, $http, $location, uiSegmentSrv, annotationsSrv) {
+  constructor(
+    $scope, $injector, $http, $location,
+    uiSegmentSrv, annotationsSrv
+  ) {
     super($scope, $injector);
-
 
     this.pageIndex = 0;
     this.table = null;
@@ -192,6 +194,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     this.events.on('data-snapshot-load', this.onDataReceived.bind(this));
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('init-panel-actions', this.onInitPanelActions.bind(this));
+
   }
 
   onInitPanelActions(actions) {
@@ -203,6 +206,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
 
   // setup the editor
   onInitEditMode() {
+    // TODO: use this.panelPath
     // determine the path to this plugin
     var panels = grafanaBootData.settings.panels;
     var thisPanel = panels[this.pluginId];
@@ -210,14 +214,17 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     // add the relative path to the partial
     var optionsPath = thisPanelPath + 'partials/editor.options.html';
     this.addEditorTab('Options', optionsPath, 2);
-    var datatableOptionsPath = thisPanelPath + 'partials/datatables.options.html';
+    var datatableOptionsPath = thisPanelPath +
+      'partials/datatables.options.html';
     this.addEditorTab('Datatable Options', datatableOptionsPath, 3);
+    console.log(this);
   }
 
   get panelPath() {
     var panels = grafanaBootData.settings.panels;
     var thisPanel = panels[this.pluginId];
-    // the system loader preprends publib to the url, add a .. to go back one level
+    // the system loader preprends publib to the url,
+    // add a .. to go back one level
     var thisPanelPath = '../' + thisPanel.baseUrl + '/';
     return thisPanelPath;
   }
@@ -280,11 +287,11 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     // panel can have a fixed height via options
     var tmpPanelHeight = this.$scope.ctrl.panel.height;
     // if that is blank, try to get it from our row
-    if (typeof tmpPanelHeight === 'undefined') {
+    if (tmpPanelHeight === undefined) {
       // get from the row instead
       tmpPanelHeight = this.row.height;
       // default to 250px if that was undefined also
-      if (typeof tmpPanelHeight === 'undefined') {
+      if (tmpPanelHeight === undefined) {
         tmpPanelHeight = 250;
       }
     } else {
@@ -365,7 +372,8 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     if (!this.dataRaw) {
       return this.$q.when([]);
     }
-    var columns = this.transformers[this.panel.transform].getColumns(this.dataRaw);
+    var columns = this.transformers[this.panel.transform]
+      .getColumns(this.dataRaw);
     var segments = _.map(columns, (c) => this.uiSegmentSrv.newSegment({
       value: c.text
     }));
