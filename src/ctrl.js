@@ -1,75 +1,22 @@
+import { CSSStylesManager } from './css-styles';
+import { DatatableRenderer } from './renderer';
+import * as Transformers from './transformers';
+import * as ColumnStyles from './column-styles';
+
 import { MetricsPanelCtrl } from 'app/plugins/sdk';
+import kbn from 'app/core/utils/kbn';
+import * as FileExport from 'app/core/utils/file_export';
+
 import $ from 'jquery';
 import angular from 'angular';
-import kbn from 'app/core/utils/kbn';
 
-import * as FileExport from 'app/core/utils/file_export';
-import DataTable from './libs/datatables.net/js/jquery.dataTables.min.js';
-
-// this is needed for basic datatables.net theme
-//import './libs/datatables.net-dt/css/jquery.dataTables.min.css!';
-
-// See this for styling https://datatables.net/manual/styling/theme-creator
-
-/*
-Dark Theme Basic uses these values
-
-table section border: #242222 rgb(36,34,34)
-row/cell border: #141414 rgb(20,20,20)
-row background: #1F1D1D  rgb(31,29,29)
-row selected color:  #242222 rgb(36,34,34)
-control text: #1FB2E5 rgb(31,178,229)
-control text: white  (dataTables_paginate)
-paging active button: #242222 rgb(36,34,34)
-paging button hover: #111111 rgb(17,17,17)
-
-with these modifications:
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-  color: white
-}
-table.dataTable tfoot th {
-  color: #1FB2E5;
-  font-weight: bold; }
-
-
-Light Theme Basic uses these values
-
-table section border: #ECECEC rgb(236,236,236)
-row/cell border: #FFFFFF rgb(255,255,255)
-row background: #FBFBFB  rgb(251,251,251)
-row selected color:  #ECECEC rgb(236,236,236)
-control text: black
-paging active button: #BEBEBE
-paging button hover: #C0C0C0
-
-with these modifications:
-.dataTables_wrapper .dataTables_paginate .paginate_button.current,
-.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-  color: #1fb2e5 !important;
-table.dataTable tfoot th {
-  color: #1FB2E5;
-  font-weight: bold; }
-*/
-
-import './css/panel.css!';
-// themes attempt to modify the entire page, this "contains" the styling to the table only
-import './css/datatables-wrapper.css!';
-
-import {
-  transformDataToTable,
-  transformers
-} from './transformers';
-
-import { DatatableRenderer } from './renderer';
-
-import * as ColumnStyles from './column-styles';
 
 const panelDefaults = {
   targets: [{}],
   transform: 'timeseries_to_columns',
   rowsPerPage: 5,
   showHeader: true,
-  styles: ColumnStyles.DEFAULT_CONFIG, // TODO: rename it
+  styles: ColumnStyles.DEFAULT_CONFIG, // TODO: rename styles option
   columns: [],
   scroll: false,
   scrollHeight: 'default',
@@ -78,11 +25,8 @@ const panelDefaults = {
     col: 0,
     desc: true
   },
+  // TODO: group with CSSStyles
   datatableTheme: 'basic_theme',
-  themeOptions: {
-    light: './css/datatable-light.css',
-    dark:  './css/datatable-dark.css'
-  },
   rowNumbersEnabled: false,
   infoEnabled: true,
   searchEnabled: true,
@@ -150,10 +94,11 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
   constructor($scope, $injector, $http, $location, uiSegmentSrv, annotationsSrv) {
     super($scope, $injector);
 
+
     this.pageIndex = 0;
     this.table = null;
     this.dataRaw = [];
-    this.transformers = transformers;
+    this.transformers = Transformers.transformers;
     this.annotationsSrv = annotationsSrv;
     this.uiSegmentSrv = uiSegmentSrv;
     // editor
@@ -235,54 +180,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     }
     _.defaults(this.panel, panelDefaults);
 
-    System.config({
-      paths: {
-        "datatables.net": this.panelPath + "libs/datatables.net/js/jquery.dataTables.min",
-        "datatables.net-bs" : this.panelPath + "libs/datatables.net-bs/js/dataTables.bootstrap.min",
-        "datatables.net-jqui" : this.panelPath + "libs/datatables.net-jqui/js/dataTables.jqueryui.min",
-        "datatables.net-zf" : this.panelPath + "libs/datatables.net-zf/js/dataTables.foundation.min",
-      }
-    });
-
-    // TODO: move to a new themes module
-    // basic datatables theme
-    // alternative themes are disabled since they affect all datatable panels on same page currently
-    switch (this.panel.datatableTheme) {
-      case 'basic_theme':
-        System.import(this.panelPath + 'libs/datatables.net-dt/css/jquery.dataTables.min.css!');
-        if (grafanaBootData.user.lightTheme) {
-          System.import(this.panelPath + this.panel.themeOptions.light + '!css');
-        } else {
-          System.import(this.panelPath + this.panel.themeOptions.dark + "!css");
-        }
-        break;
-      case 'bootstrap_theme':
-        System.import(this.panelPath + 'libs/datatables.net-bs/js/dataTables.bootstrap.min.js');
-        System.import(this.panelPath + 'libs/bootstrap/dist/css/prefixed-bootstrap.min.css!');
-        System.import(this.panelPath + 'libs/datatables.net-bs/css/dataTables.bootstrap.min.css!');
-        if (!grafanaBootData.user.lightTheme) {
-          System.import(this.panelPath + 'css/prefixed-bootstrap-slate.min.css!');
-        }
-        break;
-      case 'foundation_theme':
-        System.import(this.panelPath + 'libs/datatables.net-zf/js/dataTables.foundation.min.js');
-        System.import(this.panelPath + 'libs/foundation/css/prefixed-foundation.min.css!');
-        System.import(this.panelPath + 'libs/datatables.net-zf/css/dataTables.foundation.min.css!');
-        break;
-      case 'themeroller_theme':
-        System.import(this.panelPath + 'libs/datatables.net-jqui/js/dataTables.jqueryui.min.js');
-        System.import(this.panelPath + 'libs/datatables.net-jqui/css/dataTables.jqueryui.min.css!');
-        System.import(this.panelPath + 'css/jquery-ui-smoothness.css!');
-        break;
-      default:
-        System.import(this.panelPath + 'libs/datatables.net-dt/css/jquery.dataTables.min.css!');
-        if (grafanaBootData.user.lightTheme) {
-          System.import(this.panelPath + this.panel.themeOptions.light + '!css');
-        } else {
-          System.import(this.panelPath + this.panel.themeOptions.dark + "!css");
-        }
-        break;
-    }
+    CSSStylesManager.resolveTheme(this.panel.datatableTheme, this.panelPath);
     this.dataLoaded = true;
     this.http = $http;
 
@@ -352,6 +250,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     this.pageIndex = 0;
 
     // automatically correct transform mode based on data
+    // TODO: use switch
     if (this.dataRaw && this.dataRaw.length) {
       if (this.dataRaw[0].type === 'table') {
         this.panel.transform = 'table';
@@ -359,7 +258,10 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
         if (this.dataRaw[0].type === 'docs') {
           this.panel.transform = 'json';
         } else {
-          if (this.panel.transform === 'table' || this.panel.transform === 'json') {
+          if (
+            this.panel.transform === 'table' ||
+            this.panel.transform === 'json'
+          ) {
             this.panel.transform = 'timeseries_to_rows';
           }
         }
@@ -369,7 +271,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
   }
 
   render() {
-    this.table = transformDataToTable(this.dataRaw, this.panel);
+    this.table = Transformers.transformDataToTable(this.dataRaw, this.panel);
     this.table.sort(this.panel.sort);
     return super.render(this.table);
   }
