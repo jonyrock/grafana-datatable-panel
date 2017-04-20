@@ -117,12 +117,12 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
         value: null
       },
       {
-        text: 'Cell',
-        value: 'cell'
-      },
-      {
         text: 'Value',
         value: 'value'
+      },
+      {
+        text: 'Cell',
+        value: 'cell'
       },
       {
         text: 'Row',
