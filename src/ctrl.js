@@ -25,6 +25,7 @@ const panelDefaults = {
     col: 0,
     desc: true
   },
+  colorder: [],
   // TODO: group with CSSStyles
   datatableTheme: 'basic_theme',
   rowNumbersEnabled: false,
@@ -300,8 +301,9 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
 
   exportCsv() {
     var renderer = new DatatableRenderer(
-      this, this.panel, this.table,
-      this.dashboard.isTimezoneUtc(), this.$sanitize
+      false, this.panel, this.table,
+      this.dashboard.isTimezoneUtc(), this.$sanitize,
+      this.colorder
     );
     FileExport.exportTableDataToCsv(renderer.renderValues());
   }
@@ -312,16 +314,22 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     var formatters = [];
     var _this = this;
 
-    /**
-     * [renderPanel description]
-     * @return {[type]} [description]
-     */
     function renderPanel() {
-      var renderer = new DatatableRenderer(
-        _this, panel, ctrl.table,
-        ctrl.dashboard.isTimezoneUtc(), ctrl.$sanitize
+      if(_this.renderer) {
+        var ord =  _this.renderer.colorder;
+        if(ord) {
+          _this.panel.colorder = ord;
+          console.log('got order');
+          console.log(_this.panel.colorder);
+        }
+      }
+      _this.renderer = new DatatableRenderer(
+        _this.editMode, panel, ctrl.table,
+        ctrl.dashboard.isTimezoneUtc(), ctrl.$sanitize,
+        _this.panel.colorder
+        //[1, 0, 2, 3]
       );
-      renderer.render();
+      _this.renderer.render();
       _this.dataLoaded = true;
     }
 

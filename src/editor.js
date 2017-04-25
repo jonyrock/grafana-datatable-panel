@@ -1,23 +1,21 @@
 export default class Editor {
-  constructor(datatablePanel) {
-    this.panel = datatablePanel;
+  constructor(ctrl) {
+    this.ctrl = ctrl;
   }
 
   initEditMode() {
-    console.log('initEditMode');
-    console.log('this.panel.editMode');
-    this.panel.editMode = true;
+    this.ctrl.editMode = true;
     // TODO: use this.panelPath
     // determine the path to this plugin
     var panels = grafanaBootData.settings.panels;
-    var thisPanel = panels[this.panel.pluginId];
+    var thisPanel = panels[this.ctrl.pluginId];
     var thisPanelPath = thisPanel.baseUrl + '/';
     // add the relative path to the partial
     var optionsPath = thisPanelPath + 'partials/editor.options.html';
-    this.panel.addEditorTab('Options', optionsPath, 2);
+    this.ctrl.addEditorTab('Options', optionsPath, 2);
     var datatableOptionsPath = thisPanelPath +
       'partials/datatables.options.html';
-    this.panel.addEditorTab('Datatable Options', datatableOptionsPath, 3);
+    this.ctrl.addEditorTab('Datatable Options', datatableOptionsPath, 3);
   }
 
   changeState(fullscreen, edit) {
@@ -29,11 +27,11 @@ export default class Editor {
   }
 
   _enterEditMode() {
-    //this.panel.editMode = true;
+    //this.ctrl.editMode = true;
   }
 
   _exitEditMode() {
-    //this.panel.editMode = false;
+    //this.ctrl.editMode = false;
   }
 
 }

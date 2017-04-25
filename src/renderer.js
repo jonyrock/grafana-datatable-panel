@@ -9,8 +9,11 @@ import ColReorder from './external/datatables-colreorder/js/dataTables.colReorde
 
 
 export class DatatableRenderer {
-  constructor(dataPanel, panel, table, isUtc, sanitize) {
-    this.dataPanel = dataPanel;
+  constructor(editMode, panel, table, isUtc, sanitize, colorder) {
+
+    this.editMode = editMode;
+    this._colorder = colorder;
+
     this.formatters = [];
     this.colorState = {};
     this.panel = panel;
@@ -18,6 +21,20 @@ export class DatatableRenderer {
 
     this.isUtc = isUtc;
     this.sanitize = sanitize;
+
+    console.log('construct DatatableRenderer width order1');
+    console.log(this._colorder);
+    if(this._colorder !== undefined) {
+      while(this._colorder.length < table.columns.length) {
+        this._colorder.push(this._colorder.length);
+      }
+    }
+
+    console.log('construct DatatableRenderer width order2');
+    console.log(this._colorder);
+
+
+
   }
 
   /**
@@ -250,123 +267,120 @@ export class DatatableRenderer {
         title: this.table.columns[i].text,
         type: this.table.columns[i].type
       });
-        columnDefs.push({
-            "targets": i + rowNumberOffset,
-            "createdCell": function (td, cellData, rowData, row, col) {
-              // set the fontsize for the cell
-              $(td).css('font-size', _this.panel.fontSize);
-              // undefined types should have numerical data, any others are already formatted
-              let actualColumn = col;
-              if (_this.panel.rowNumbersEnabled) {
-                actualColumn -= 1;
-              }
-              if (_this.table.columns[actualColumn].type !== undefined) return;
-              // for coloring rows, get the "worst" threshold
-              var rowColor = null;
-              var color = null;
-              var rowColorIndex = null;
-              var rowColorData = null;
-              if (_this.colorState.row) {
-                // run all of the rowData through threshold check, get the "highest" index
-                // and use that for the entire row
-                if (rowData === null) return;
-                rowColorIndex = -1;
-                rowColorData = null;
-                rowColor = _this.colorState.row;
-                // this should be configurable...
-                color = 'white';
-                for (let columnNumber = 0; columnNumber < _this.table.columns.length; columnNumber++) {
-                  // only columns of type undefined are checked
-                  if (_this.table.columns[columnNumber].type === undefined) {
-                    rowColorData = _this.getCellColors(
-                      _this.colorState, columnNumber,
-                      rowData[columnNumber + rowNumberOffset]
-                    );
-                    if (rowColorData.bgColorIndex !== null) {
-                      if (rowColorData.bgColorIndex > rowColorIndex) {
-                        rowColorIndex = rowColorData.bgColorIndex;
-                        rowColor = rowColorData.bgColor;
-                      }
-                    }
+      columnDefs.push({
+        "targets": i + rowNumberOffset,
+        "createdCell": function (td, cellData, rowData, row, col) {
+          // set the fontsize for the cell
+          $(td).css('font-size', _this.panel.fontSize);
+          // undefined types should have numerical data, any others are already formatted
+          let actualColumn = col;
+          if (_this.panel.rowNumbersEnabled) {
+            actualColumn -= 1;
+          }
+          if (_this.table.columns[actualColumn].type !== undefined) return;
+          // for coloring rows, get the "worst" threshold
+          var rowColor = null;
+          var color = null;
+          var rowColorIndex = null;
+          var rowColorData = null;
+          if (_this.colorState.row) {
+            // run all of the rowData through threshold check, get the "highest" index
+            // and use that for the entire row
+            if (rowData === null) return;
+            rowColorIndex = -1;
+            rowColorData = null;
+            rowColor = _this.colorState.row;
+            // this should be configurable...
+            color = 'white';
+            for (let columnNumber = 0; columnNumber < _this.table.columns.length; columnNumber++) {
+              // only columns of type undefined are checked
+              if (_this.table.columns[columnNumber].type === undefined) {
+                rowColorData = _this.getCellColors(
+                  _this.colorState, columnNumber,
+                  rowData[columnNumber + rowNumberOffset]
+                );
+                if (rowColorData.bgColorIndex !== null) {
+                  if (rowColorData.bgColorIndex > rowColorIndex) {
+                    rowColorIndex = rowColorData.bgColorIndex;
+                    rowColor = rowColorData.bgColor;
                   }
-                }
-                // style the entire row (the parent of the td is the tr)
-                // this will color the rowNumber and Timestamp also
-                $(td.parentNode).children().css('color', color);
-                $(td.parentNode).children().css('background-color', rowColor);
-              }
-
-              if (_this.colorState.rowcolumn) {
-                // run all of the rowData through threshold check, get the "highest" index
-                // and use that for the entire row
-                if (rowData === null) return;
-                rowColorIndex = -1;
-                rowColorData = null;
-                rowColor = _this.colorState.rowcolumn;
-                // this should be configurable...
-                color = 'white';
-                for (let columnNumber = 0; columnNumber < _this.table.columns.length; columnNumber++) {
-                  // only columns of type undefined are checked
-                  if (_this.table.columns[columnNumber].type === undefined) {
-                    rowColorData = _this.getCellColors(
-                      _this.colorState, columnNumber,
-                      rowData[columnNumber + rowNumberOffset]
-                    );
-                    if (rowColorData.bgColorIndex !== null) {
-                      if (rowColorData.bgColorIndex > rowColorIndex) {
-                        rowColorIndex = rowColorData.bgColorIndex;
-                        rowColor = rowColorData.bgColor;
-                      }
-                    }
-                  }
-                }
-                // style the rowNumber and Timestamp column
-                // the cell colors will be determined in the next phase
-                if (_this.table.columns[0].type !== undefined) {
-                  var children = $(td.parentNode).children();
-                  var aChild = children[0];
-                  $(aChild).css('color', color);
-                  $(aChild).css('background-color', rowColor);
-                  // the 0 column contains the row number, if they are enabled
-                  // then the above just filled in the color for the row number,
-                  // now take care of the timestamp
-                  if (_this.panel.rowNumbersEnabled) {
-                    aChild = children[1];
-                    $(aChild).css('color', color);
-                    $(aChild).css('background-color', rowColor);
-                  }
-                }
-              }
-
-              // Process cell coloring
-              // Two scenarios:
-              //    1) Cell coloring is enabled, the above row color is skipped
-              //    2) RowColumn is enabled, the above row color is process, but we also
-              //    set the cell colors individually
-              var colorData = _this.getCellColors(_this.colorState, actualColumn, cellData);
-              if ((_this.colorState.cell) || (_this.colorState.rowcolumn)){
-                if (colorData.color !== undefined) {
-                  $(td).css('color', colorData.color);
-                }
-                if (colorData.bgColor !== undefined) {
-                  $(td).css('background-color', colorData.bgColor);
-                }
-              } else if (_this.colorState.value) {
-                if (colorData.color !== undefined) {
-                  $(td).css('color', colorData.color);
                 }
               }
             }
+            // style the entire row (the parent of the td is the tr)
+            // this will color the rowNumber and Timestamp also
+            $(td.parentNode).children().css('color', color);
+            $(td.parentNode).children().css('background-color', rowColor);
           }
-        );
+
+          if (_this.colorState.rowcolumn) {
+            // run all of the rowData through threshold check, get the "highest" index
+            // and use that for the entire row
+            if (rowData === null) return;
+            rowColorIndex = -1;
+            rowColorData = null;
+            rowColor = _this.colorState.rowcolumn;
+            // this should be configurable...
+            color = 'white';
+            for (let columnNumber = 0; columnNumber < _this.table.columns.length; columnNumber++) {
+              // only columns of type undefined are checked
+              if (_this.table.columns[columnNumber].type === undefined) {
+                rowColorData = _this.getCellColors(
+                  _this.colorState, columnNumber,
+                  rowData[columnNumber + rowNumberOffset]
+                );
+                if (rowColorData.bgColorIndex !== null) {
+                  if (rowColorData.bgColorIndex > rowColorIndex) {
+                    rowColorIndex = rowColorData.bgColorIndex;
+                    rowColor = rowColorData.bgColor;
+                  }
+                }
+              }
+            }
+            // style the rowNumber and Timestamp column
+            // the cell colors will be determined in the next phase
+            if (_this.table.columns[0].type !== undefined) {
+              var children = $(td.parentNode).children();
+              var aChild = children[0];
+              $(aChild).css('color', color);
+              $(aChild).css('background-color', rowColor);
+              // the 0 column contains the row number, if they are enabled
+              // then the above just filled in the color for the row number,
+              // now take care of the timestamp
+              if (_this.panel.rowNumbersEnabled) {
+                aChild = children[1];
+                $(aChild).css('color', color);
+                $(aChild).css('background-color', rowColor);
+              }
+            }
+          }
+
+          // Process cell coloring
+          // Two scenarios:
+          //    1) Cell coloring is enabled, the above row color is skipped
+          //    2) RowColumn is enabled, the above row color is process, but we also
+          //    set the cell colors individually
+          var colorData = _this.getCellColors(_this.colorState, actualColumn, cellData);
+          if ((_this.colorState.cell) || (_this.colorState.rowcolumn)){
+            if (colorData.color !== undefined) {
+              $(td).css('color', colorData.color);
+            }
+            if (colorData.bgColor !== undefined) {
+              $(td).css('background-color', colorData.bgColor);
+            }
+          } else if (_this.colorState.value) {
+            if (colorData.color !== undefined) {
+              $(td).css('color', colorData.color);
+            }
+          }
+        }
+      }
+    );
     }
 
     try {
       var should_destroy = false;
       if ($.fn.dataTable.isDataTable('#datatable-panel-table-' + this.panel.id)) {
-        should_destroy = true;
-      }
-      if (should_destroy) {
         var aDT = $('#datatable-panel-table-' + this.panel.id).DataTable();
         aDT.destroy();
         $('#datatable-panel-table-' + this.panel.id).empty();
@@ -398,7 +412,6 @@ export class DatatableRenderer {
       orderSetting = [[0, 'asc']];
     }
 
-    console.log('render in edit mode:' + this.panel.editMode);
     var tableOptions = {
       "lengthMenu": [
         [5, 10, 25, 50, 75, 100, -1],
@@ -413,9 +426,18 @@ export class DatatableRenderer {
       columns: columns,
       columnDefs: columnDefs,
       "search": { "regex": true },
-      "order": orderSetting,
-      colReorder: this.dataPanel.editMode
+      "order": orderSetting
     };
+
+    if(this.editMode) {
+      if(this._colorder) {
+        tableOptions.colReorder = {
+          order: this._colorder
+        };
+      } else {
+        tableOptions.colReorder = true;
+      }
+    }
     if (this.panel.scroll) {
       tableOptions.paging = false;
       tableOptions.scrollY = panelHeight;
@@ -424,6 +446,7 @@ export class DatatableRenderer {
       tableOptions.pagingType = this.panel.datatablePagingType;
     }
     var newDT = $('#datatable-panel-table-' + this.panel.id).DataTable(tableOptions);
+    _this.dt = newDT;
 
     // enable compact mode
     if (this.panel.compactRowsEnabled) {
@@ -480,6 +503,13 @@ export class DatatableRenderer {
       columns: this.table.columns,
       rows: rows,
     };
+  }
+
+  get colorder() {
+    if(this.dt && this.editMode) {
+      return this.dt.colReorder.order();
+    }
+    return this._colorder;
   }
 
 }
