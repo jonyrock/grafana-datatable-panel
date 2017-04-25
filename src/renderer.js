@@ -4,31 +4,13 @@ import jquery from 'jquery';
 import kbn from 'app/core/utils/kbn';
 import moment from 'moment';
 
-System.config({
-  defaultJSExtenions: true,
-  paths: {
-    'datatables.net': './libs/datatables-colreorder/js/dataTables.colReorder.js'
-  }
-});
-
 import DataTable from './libs/datatables.net/js/jquery.dataTables.min.js';
-// DataTable(window, jquery);
-import ColReorder from './libs/datatables-colreorder/js/dataTables.colReorder.js';
-// ColReorder(window, jquery);
+import ColReorder from './external/datatables-colreorder/js/dataTables.colReorder.js';
 
-
-//require('./libs/datatables-colreorder/js/dataTables.colReorder.js!');
-
-
-// console.log(System);
-// System
-//   .import('/public/plugins/briangann-datatable-panel/libs/datatables.net/js/jquery.dataTables.min.js')
-//   .then(m => console.log(m))
-//   ;
-  // .then(dtm => console.log(dtm));
 
 export class DatatableRenderer {
-  constructor(panel, table, isUtc, sanitize) {
+  constructor(dataPanel, panel, table, isUtc, sanitize) {
+    this.dataPanel = dataPanel;
     this.formatters = [];
     this.colorState = {};
     this.panel = panel;
@@ -99,11 +81,6 @@ export class DatatableRenderer {
     if (!style) {
       return this.defaultCellFormatter;
     }
-    if (style.type === 'hidden') {
-      return v => {
-        return undefined;
-      };
-    }
     if (style.type === 'date') {
       return v => {
         if (v === undefined || v === null) {
@@ -170,10 +147,6 @@ export class DatatableRenderer {
       let cellData = [];
       //cellData.push('');
       for (var i = 0; i < this.table.columns.length; i++) {
-        let value = this.formatColumnValue(i, row[i]);
-        if (value === undefined) {
-          this.table.columns[i].hidden = true;
-        }
         cellData.push(this.formatColumnValue(i, row[i]));
       }
       if (this.panel.rowNumbersEnabled) {
@@ -245,12 +218,15 @@ export class DatatableRenderer {
    * annotations - specific headers for this
    * table
    * json (raw)
-   * columns[x].type === "date" then set columndefs to parse the date, otherwise leave it as default
+   * columns[x].type === "date" then set columndefs to parse the date,
+   * otherwise leave it as default
    * convert table.columns[N].text to columns formatted to datatables.net format
    * @return {[Boolean]} True if loaded without errors
    */
   render() {
-    if (this.table.columns.length === 0) return;
+    if (this.table.columns.length === 0) {
+      return;
+    }
     var columns = [];
     var columnDefs = [];
     var _this = this;
@@ -261,13 +237,12 @@ export class DatatableRenderer {
         title: '',
         type: 'number'
       });
-      columnDefs.push(
-        {
-            "searchable": false,
-            "orderable": false,
-            "targets": 0,
-            "width": "1%",
-        });
+      columnDefs.push({
+        "searchable": false,
+        "orderable": false,
+        "targets": 0,
+        "width": "1%",
+      });
     }
     for (let i = 0; i < this.table.columns.length; i++) {
       /* jshint loopfunc: true */
@@ -275,12 +250,9 @@ export class DatatableRenderer {
         title: this.table.columns[i].text,
         type: this.table.columns[i].type
       });
-        columnDefs.push(
-          {
+        columnDefs.push({
             "targets": i + rowNumberOffset,
             "createdCell": function (td, cellData, rowData, row, col) {
-              // hidden columns have null data
-              if (cellData === null) return;
               // set the fontsize for the cell
               $(td).css('font-size', _this.panel.fontSize);
               // undefined types should have numerical data, any others are already formatted
@@ -336,7 +308,10 @@ export class DatatableRenderer {
                 for (let columnNumber = 0; columnNumber < _this.table.columns.length; columnNumber++) {
                   // only columns of type undefined are checked
                   if (_this.table.columns[columnNumber].type === undefined) {
-                    rowColorData = _this.getCellColors(_this.colorState, columnNumber, rowData[columnNumber + rowNumberOffset]);
+                    rowColorData = _this.getCellColors(
+                      _this.colorState, columnNumber,
+                      rowData[columnNumber + rowNumberOffset]
+                    );
                     if (rowColorData.bgColorIndex !== null) {
                       if (rowColorData.bgColorIndex > rowColorIndex) {
                         rowColorIndex = rowColorData.bgColorIndex;
@@ -423,8 +398,12 @@ export class DatatableRenderer {
       orderSetting = [[0, 'asc']];
     }
 
+    console.log('render in edit mode:' + this.panel.editMode);
     var tableOptions = {
-      "lengthMenu": [ [5, 10, 25, 50, 75, 100, -1], [5, 10, 25, 50, 75, 100, "All"] ],
+      "lengthMenu": [
+        [5, 10, 25, 50, 75, 100, -1],
+        [5, 10, 25, 50, 75, 100, "All"]
+      ],
       searching: this.panel.searchEnabled,
       info: this.panel.infoEnabled,
       lengthChange: this.panel.lengthChangeEnabled,
@@ -433,11 +412,9 @@ export class DatatableRenderer {
       data: formattedData,
       columns: columns,
       columnDefs: columnDefs,
-      "search": {
-        "regex": true
-      },
+      "search": { "regex": true },
       "order": orderSetting,
-      colReorder: true
+      colReorder: this.dataPanel.editMode
     };
     if (this.panel.scroll) {
       tableOptions.paging = false;
@@ -447,13 +424,6 @@ export class DatatableRenderer {
       tableOptions.pagingType = this.panel.datatablePagingType;
     }
     var newDT = $('#datatable-panel-table-' + this.panel.id).DataTable(tableOptions);
-
-    // hide columns that are marked hidden
-    for (let i = 0; i < this.table.columns.length; i++) {
-      if (this.table.columns[i].hidden) {
-        newDT.column( i + rowNumberOffset ).visible( false );
-      }
-    }
 
     // enable compact mode
     if (this.panel.compactRowsEnabled) {
@@ -480,16 +450,17 @@ export class DatatableRenderer {
     if (!this.panel.scroll) {
       // set the page size
       if (this.panel.rowsPerPage !== null) {
-        newDT.page.len( this.panel.rowsPerPage ).draw();
+        newDT.page.len(this.panel.rowsPerPage).draw();
       }
     }
     // function to display row numbers
     if (this.panel.rowNumbersEnabled) {
-      newDT.on( 'order.dt search.dt', function () {
-        newDT.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-            cell.innerHTML = i+1;
-        } );
-      } ).draw();
+      newDT.on('order.dt search.dt', function () {
+        newDT
+          .column(0, {search:'applied', order:'applied'})
+          .nodes()
+          .each((cell, i) => cell.innerHTML = i + 1);
+      }).draw();
     }
   }
 
@@ -510,4 +481,5 @@ export class DatatableRenderer {
       rows: rows,
     };
   }
+
 }

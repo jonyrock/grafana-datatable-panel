@@ -103,6 +103,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     this.transformers = Transformers.transformers;
     this.annotationsSrv = annotationsSrv;
     this.uiSegmentSrv = uiSegmentSrv;
+    this.editMode = false;
     // editor
 
     this.addColumnSegment = uiSegmentSrv.newPlusButton();
@@ -206,6 +207,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
   }
 
   changeView(fullscreen, edit) {
+    this.editMode = edit;
     this.editor.changeState(fullscreen, edit);
     MetricsPanelCtrl.prototype.changeView.call(this, fullscreen, edit);
   }
@@ -298,7 +300,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
 
   exportCsv() {
     var renderer = new DatatableRenderer(
-      this.panel, this.table,
+      this, this.panel, this.table,
       this.dashboard.isTimezoneUtc(), this.$sanitize
     );
     FileExport.exportTableDataToCsv(renderer.renderValues());
@@ -316,7 +318,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
      */
     function renderPanel() {
       var renderer = new DatatableRenderer(
-        panel, ctrl.table,
+        _this, panel, ctrl.table,
         ctrl.dashboard.isTimezoneUtc(), ctrl.$sanitize
       );
       renderer.render();

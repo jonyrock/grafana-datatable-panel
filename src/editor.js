@@ -1,9 +1,12 @@
 export default class Editor {
-  constructor(panel) {
-    this.panel = panel;
+  constructor(datatablePanel) {
+    this.panel = datatablePanel;
   }
 
   initEditMode() {
+    console.log('initEditMode');
+    console.log('this.panel.editMode');
+    this.panel.editMode = true;
     // TODO: use this.panelPath
     // determine the path to this plugin
     var panels = grafanaBootData.settings.panels;
@@ -26,11 +29,11 @@ export default class Editor {
   }
 
   _enterEditMode() {
-    console.log('enter editor');
+    //this.panel.editMode = true;
   }
 
   _exitEditMode() {
-    console.log('exit editor');
+    //this.panel.editMode = false;
   }
 
 }
