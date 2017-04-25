@@ -31,7 +31,15 @@ export default class Editor {
   }
 
   _exitEditMode() {
-    //this.ctrl.editMode = false;
+    console.log('exit oh');
+    console.log(this.ctrl.renderer);
+
+    var ord = this.ctrl.renderer.colorder;
+    if(!_.isEqual(ord), this.ctrl.panel.colorder) {
+      this.ctrl.panel.colorder = ord;
+      this.ctrl.render();
+    }
+
   }
 
 }

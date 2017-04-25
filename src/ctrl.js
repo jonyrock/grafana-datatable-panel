@@ -26,6 +26,7 @@ const panelDefaults = {
     desc: true
   },
   colorder: [],
+  colorder2: [],
   // TODO: group with CSSStyles
   datatableTheme: 'basic_theme',
   rowNumbersEnabled: false,
@@ -96,6 +97,8 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     $scope, $injector, $http, $location, $rootScope,
     uiSegmentSrv, annotationsSrv
   ) {
+
+
     super($scope, $injector);
 
     this.pageIndex = 0;
@@ -182,7 +185,19 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
       delete this.panel.columns;
       delete this.panel.fields;
     }
+
+    console.log('def1');
+    console.log(this.panel.colorder);
+
+    console.log('def2');
+    console.log(this.panel.colorder2);
+
     _.defaults(this.panel, panelDefaults);
+
+    console.log('SHIT BRO');
+    console.log(this.panel.colorder);
+
+    console.log(this.panel);
 
     CSSStylesManager.resolveTheme(this.panel.datatableTheme, this.panelPath);
     this.dataLoaded = true;
@@ -315,19 +330,10 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     var _this = this;
 
     function renderPanel() {
-      if(_this.renderer) {
-        var ord =  _this.renderer.colorder;
-        if(ord) {
-          _this.panel.colorder = ord;
-          console.log('got order');
-          console.log(_this.panel.colorder);
-        }
-      }
       _this.renderer = new DatatableRenderer(
         _this.editMode, panel, ctrl.table,
         ctrl.dashboard.isTimezoneUtc(), ctrl.$sanitize,
         _this.panel.colorder
-        //[1, 0, 2, 3]
       );
       _this.renderer.render();
       _this.dataLoaded = true;
