@@ -1,5 +1,5 @@
 {
-  "name": "briangann-datatable-panel",
+  "name": "jonyrock-datatable-panel",
   "private": true,
   "version": "0.0.2",
   "description": "Grafana Datatable Panel",
@@ -11,7 +11,10 @@
     "type": "git",
     "url": "git+https://github.com/briangann/grafana-datatable-panel.git"
   },
-  "author": "Brian Gann",
+  "authors": [
+    "Brian Gann <bkgann@gmail.com>",
+    "Alexey Velikiy <gmpota@gmail.com>"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/briangann/grafana-datatable-panel/issues"
@@ -46,5 +49,5 @@
     "typescript": "^2.0.10"
   },
   "dependencies": {},
-  "homepage": "https://github.com/briangann/grafana-datatable-panel"
+  "homepage": "https://github.com/jonyrock/grafana-datatable-panel"
 }
