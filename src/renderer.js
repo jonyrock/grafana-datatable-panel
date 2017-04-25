@@ -22,18 +22,11 @@ export class DatatableRenderer {
     this.isUtc = isUtc;
     this.sanitize = sanitize;
 
-    console.log('construct DatatableRenderer width order1');
-    console.log(this._colorder);
     if(this._colorder !== undefined) {
       while(this._colorder.length < table.columns.length) {
         this._colorder.push(this._colorder.length);
       }
     }
-
-    console.log('construct DatatableRenderer width order2');
-    console.log(this._colorder);
-
-
 
   }
 
@@ -436,6 +429,13 @@ export class DatatableRenderer {
         };
       } else {
         tableOptions.colReorder = true;
+      }
+    } else {
+      tableOptions.colReorder = {
+        realtime: false
+      };
+      if(this._colorder) {
+        tableOptions.colReorder.order = this._colorder;
       }
     }
     if (this.panel.scroll) {
