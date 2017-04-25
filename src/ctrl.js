@@ -1,5 +1,6 @@
 import { CSSStylesManager } from './css-styles';
 import { DatatableRenderer } from './renderer';
+import Editor from './editor';
 import * as Transformers from './transformers';
 import * as ColumnStyles from './column-styles';
 
@@ -8,7 +9,6 @@ import kbn from 'app/core/utils/kbn';
 import * as FileExport from 'app/core/utils/file_export';
 
 import $ from 'jquery';
-import angular from 'angular';
 
 
 const panelDefaults = {
@@ -92,7 +92,7 @@ const panelDefaults = {
 export class DatatablePanelCtrl extends MetricsPanelCtrl {
 
   constructor(
-    $scope, $injector, $http, $location,
+    $scope, $injector, $http, $location, $rootScope,
     uiSegmentSrv, annotationsSrv
   ) {
     super($scope, $injector);
@@ -185,6 +185,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     CSSStylesManager.resolveTheme(this.panel.datatableTheme, this.panelPath);
     this.dataLoaded = true;
     this.http = $http;
+    this.editor = new Editor(this);
 
     this.panel.columnsStylesManager = new ColumnStyles.ColumnsStylesManager(
       this.panel.styles
@@ -192,7 +193,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     this.events.on('data-received', this.onDataReceived.bind(this));
     this.events.on('data-error', this.onDataError.bind(this));
     this.events.on('data-snapshot-load', this.onDataReceived.bind(this));
-    this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
+    this.events.on('init-edit-mode', this.editor.initEditMode.bind(this.editor));
     this.events.on('init-panel-actions', this.onInitPanelActions.bind(this));
 
   }
@@ -204,19 +205,9 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
     });
   }
 
-  // setup the editor
-  onInitEditMode() {
-    // TODO: use this.panelPath
-    // determine the path to this plugin
-    var panels = grafanaBootData.settings.panels;
-    var thisPanel = panels[this.pluginId];
-    var thisPanelPath = thisPanel.baseUrl + '/';
-    // add the relative path to the partial
-    var optionsPath = thisPanelPath + 'partials/editor.options.html';
-    this.addEditorTab('Options', optionsPath, 2);
-    var datatableOptionsPath = thisPanelPath +
-      'partials/datatables.options.html';
-    this.addEditorTab('Datatable Options', datatableOptionsPath, 3);
+  changeView(fullscreen, edit) {
+    this.editor.changeState(fullscreen, edit);
+    MetricsPanelCtrl.prototype.changeView.call(this, fullscreen, edit);
   }
 
   get panelPath() {

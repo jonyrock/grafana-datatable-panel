@@ -1,7 +1,31 @@
-import $ from 'jquery';
+//console.log(jquery);
+import jquery from 'jquery';
+
 import kbn from 'app/core/utils/kbn';
 import moment from 'moment';
+
+System.config({
+  defaultJSExtenions: true,
+  paths: {
+    'datatables.net': './libs/datatables-colreorder/js/dataTables.colReorder.js'
+  }
+});
+
 import DataTable from './libs/datatables.net/js/jquery.dataTables.min.js';
+// DataTable(window, jquery);
+import ColReorder from './libs/datatables-colreorder/js/dataTables.colReorder.js';
+// ColReorder(window, jquery);
+
+
+//require('./libs/datatables-colreorder/js/dataTables.colReorder.js!');
+
+
+// console.log(System);
+// System
+//   .import('/public/plugins/briangann-datatable-panel/libs/datatables.net/js/jquery.dataTables.min.js')
+//   .then(m => console.log(m))
+//   ;
+  // .then(dtm => console.log(dtm));
 
 export class DatatableRenderer {
   constructor(panel, table, isUtc, sanitize) {
@@ -214,7 +238,7 @@ export class DatatableRenderer {
   }
   /**
    * Construct table using Datatables.net API
-   *  multiple types supported
+   * multiple types supported
    * timeseries_to_rows (column 0 = timestamp)
    * timeseries_to_columns
    * timeseries_aggregations - column 0 is the metric name (series name, not a timestamp)
@@ -282,7 +306,10 @@ export class DatatableRenderer {
                 for (let columnNumber = 0; columnNumber < _this.table.columns.length; columnNumber++) {
                   // only columns of type undefined are checked
                   if (_this.table.columns[columnNumber].type === undefined) {
-                    rowColorData = _this.getCellColors(_this.colorState, columnNumber, rowData[columnNumber + rowNumberOffset]);
+                    rowColorData = _this.getCellColors(
+                      _this.colorState, columnNumber,
+                      rowData[columnNumber + rowNumberOffset]
+                    );
                     if (rowColorData.bgColorIndex !== null) {
                       if (rowColorData.bgColorIndex > rowColorIndex) {
                         rowColorIndex = rowColorData.bgColorIndex;
@@ -361,7 +388,7 @@ export class DatatableRenderer {
 
     try {
       var should_destroy = false;
-      if ( $.fn.dataTable.isDataTable( '#datatable-panel-table-' + this.panel.id )) {
+      if ($.fn.dataTable.isDataTable('#datatable-panel-table-' + this.panel.id)) {
         should_destroy = true;
       }
       if (should_destroy) {
@@ -374,7 +401,8 @@ export class DatatableRenderer {
       console.log("Exception: " + err.message);
     }
     // sanity check
-    // annotations come back as 4 items in an array per row. If the first row content is undefined, then modify to empty
+    // annotations come back as 4 items in an array per row.
+    // If the first row content is undefined, then modify to empty
     // since datatables.net throws errors
     if (this.table.rows[0].length === 4) {
       if (this.table.rows[0][0] === undefined) {
@@ -408,7 +436,8 @@ export class DatatableRenderer {
       "search": {
         "regex": true
       },
-      "order": orderSetting
+      "order": orderSetting,
+      colReorder: true
     };
     if (this.panel.scroll) {
       tableOptions.paging = false;

@@ -21,12 +21,11 @@ module.exports = function(grunt) {
 
     cssmin: {
        dist: {
-          options: {
-          },
-          files: {
-             'dist/libs/bootstrap/dist/css/prefixed-bootstrap.min.css': ['dist/libs/bootstrap/dist/css/prefixed-bootstrap.css'],
-             'dist/libs/foundation/css/prefixed-foundation.min.css': ['dist/libs/foundation/css/prefixed-foundation.css'],
-             'dist/css/prefixed-bootstrap-slate.min.css': ['dist/css/prefixed-bootstrap-slate.css'],
+        options: {},
+        files: {
+          'dist/libs/bootstrap/dist/css/prefixed-bootstrap.min.css': ['dist/libs/bootstrap/dist/css/prefixed-bootstrap.css'],
+          'dist/libs/foundation/css/prefixed-foundation.min.css': ['dist/libs/foundation/css/prefixed-foundation.css'],
+          'dist/css/prefixed-bootstrap-slate.min.css': ['dist/css/prefixed-bootstrap-slate.css'],
         }
       }
     },
@@ -97,7 +96,7 @@ module.exports = function(grunt) {
           'jquery-placeholder/**',
           'jquery.cookie/**',
           'modernizr/**'
-      ],
+        ],
         dest: 'dist/libs/'
       },
       pluginDef: {
@@ -108,21 +107,21 @@ module.exports = function(grunt) {
     },
 
     multidest: {
-        copy_some_files: {
-            tasks: [
-                "copy:main",
-                "copy:externals",
-                "copy:pluginDef"
-            ],
-            dest: ["dist"]
-        },
+      copy_some_files: {
+        tasks: [
+          "copy:main",
+          "copy:externals",
+          "copy:pluginDef"
+        ],
+        dest: ["dist"]
+      },
     },
 
     packageModules: {
-        dist: {
-          src: 'package.json',
-          dest: 'dist/src'
-        },
+      dist: {
+        src: 'package.json',
+        dest: 'dist/src'
+      },
     },
 
     concat: {
@@ -162,11 +161,15 @@ module.exports = function(grunt) {
 
 
   grunt.registerTask('default', [
-          'jshint',
-          'multidest',
-          'copy:bower_libs',
-          'css_selectors',
-          'cssmin',
-          'babel']);
-  grunt.registerTask('release', ['jshint', 'clean', 'multidest', 'copy:bower_libs', 'packageModules', 'babel']);
+    'jshint',
+    'multidest',
+    'copy:bower_libs',
+    'css_selectors',
+    'cssmin',
+    'babel'
+  ]);
+  grunt.registerTask('release', [
+    'jshint', 'clean', 'multidest',
+    'copy:bower_libs', 'packageModules', 'babel'
+  ]);
 };
