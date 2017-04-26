@@ -29,12 +29,7 @@ export class DatatableRenderer {
 
   }
 
-  /**
-   * Given a value, return the color corresponding to the threshold set
-   * @param  {[Float]} value [Value to be evaluated]
-   * @param  {[Array]} style [Settings containing colors and thresholds]
-   * @return {[String]}       [color]
-   */
+
   getColorForValue(value, style) {
     if (!style.thresholds) {
       return null;
@@ -60,12 +55,6 @@ export class DatatableRenderer {
     return 0;
   }
 
-  /**
-   * [defaultCellFormatter description]
-   * @param  {[type]} v     [description]
-   * @param  {[type]} style [description]
-   * @return {[type]}       [description]
-   */
   defaultCellFormatter(v, style) {
     if (v === null || v === void 0 || v === undefined) {
       return '';
@@ -80,12 +69,6 @@ export class DatatableRenderer {
     }
   }
 
-  /**
-   * [createColumnFormatter description]
-   * @param  {[type]} style  [description]
-   * @param  {[type]} column [description]
-   * @return {[type]}        [description]
-   */
   createColumnFormatter(style, column) {
     if (!style) {
       return this.defaultCellFormatter;
@@ -132,12 +115,6 @@ export class DatatableRenderer {
     };
   }
 
-  /**
-   * [formatColumnValue description]
-   * @param  {[type]} colIndex [description]
-   * @param  {[type]} value    [description]
-   * @return {[type]}          [description]
-   */
   formatColumnValue(colIndex, value) {
     if(!this.formatters[colIndex]) {
       let column = this.table.columns[colIndex];
@@ -151,11 +128,6 @@ export class DatatableRenderer {
     return this.formatters[colIndex](value);
   }
 
-  /**
-   * [generateFormattedData description]
-   * @param  {[type]} rowData [description]
-   * @return {[type]}         [description]
-   */
   generateFormattedData(rowData) {
     let formattedRowData = [];
     for (var y = 0; y < rowData.length; y++) {
@@ -377,6 +349,9 @@ export class DatatableRenderer {
         "createdCell": this.createdCell.bind(this)
       });
     }
+
+    console.log('columnDefs');
+    console.log(columnDefs);
 
     try {
       var should_destroy = false;
