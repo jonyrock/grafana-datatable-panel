@@ -7,6 +7,12 @@ Array.prototype.swap = function(p, q) {
   return this;
 };
 
+const DEFAULT_RENDER_FUNCTION =
+`function(v) {
+  return '~' + v + '!';
+}
+`;
+
 const NEW_STYLE_DEFAULT = {
   unit: 'short',
   type: 'number',
@@ -19,6 +25,8 @@ const NEW_STYLE_DEFAULT = {
   colorMode: null,
   pattern: '/.*/',
   thresholds: [],
+  // default config for custom style
+  renderFunction: DEFAULT_RENDER_FUNCTION
 };
 
 export const DEFAULT_CONFIG = [

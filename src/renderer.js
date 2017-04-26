@@ -122,9 +122,10 @@ export class DatatableRenderer {
     }
 
     if (style.type === 'custom') {
-      return v => {
-        return '-';
-      };
+      var src = '(' + style.renderFunction +')';
+      /* jshint ignore:start */
+      return eval(src);
+      /* jshint ignore:end */
     }
     return (value) => {
       return this.defaultCellFormatter(value, style);
