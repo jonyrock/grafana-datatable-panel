@@ -5,3 +5,7 @@
   padding: 6px;
   overflow: hidden;
 }
+
+.codeEditor {
+  font-family: monospace;
+}

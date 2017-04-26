@@ -9,7 +9,7 @@ Array.prototype.swap = function(p, q) {
 
 const DEFAULT_RENDER_FUNCTION =
 `function(v) {
-  return '~' + v + '!';
+  return '~' + v + '~';
 }
 `;
 
