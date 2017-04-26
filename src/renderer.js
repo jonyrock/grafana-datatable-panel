@@ -350,9 +350,6 @@ export class DatatableRenderer {
       });
     }
 
-    console.log('columnDefs');
-    console.log(columnDefs);
-
     try {
       var should_destroy = false;
       if ($.fn.dataTable.isDataTable('#datatable-panel-table-' + this.panel.id)) {
