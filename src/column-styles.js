@@ -60,12 +60,10 @@ export class ColumnsStylesManager {
   }
 
   moveUpColumnStyle(index) {
-    console.log('moveUpColumnStyle' + index);
     this.styles.swap(index - 1, index);
   }
 
   moveDownColumnStyle(index) {
-    console.log('moveDownColumnStyle' + index);
     this.styles.swap(index + 1, index);
   }
 

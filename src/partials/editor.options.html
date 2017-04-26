@@ -22,7 +22,11 @@
 				</label>
 			</div>
 			<div class="gf-form">
-				<metric-segment segment="ctrl.addColumnSegment" get-options="ctrl.getColumnOptions()" on-change="ctrl.addColumn()"></metric-segment>
+				<metric-segment
+					segment="ctrl.addColumnSegment"
+					get-options="ctrl.getColumnOptions()"
+					on-change="ctrl.addColumn()"
+				/>
 			</div>
 		</div>
 	</div>
@@ -55,7 +59,7 @@
 				</div>
 
 				<div class="gf-form">
-					<label class="gf-form-label"> Name or regex</label>
+					<label class="gf-form-label">Name or regex</label>
 					<input
 						type="text" class="gf-form-input"
 						ng-model="style.pattern" bs-typeahead="ctrl.getColumnNames"
@@ -66,12 +70,22 @@
 				<div class="gf-form">
 					<label class="gf-form-label">Type</label>
 					<div class="gf-form-select-wrapper">
-						<select class="gf-form-input" ng-model="style.type" ng-options="c.value as c.text for c in ctrl.columnTypes" ng-change="ctrl.render()"></select>
+						<select
+							class="gf-form-input"
+							ng-model="style.type"
+							ng-options="c.value as c.text for c in ctrl.columnTypes"
+							ng-change="ctrl.render()"
+						/>
 					</div>
 				</div>
 				<div class="gf-form" ng-if="style.type === 'date'">
 					<label class="gf-form-label">Format</label>
-					<metric-segment-model property="style.dateFormat" options="ctrl.dateFormats" on-change="ctrl.render()" custom="true"></metric-segment-model>
+					<metric-segment-model
+						property="style.dateFormat"
+						options="ctrl.dateFormats"
+						on-change="ctrl.render()"
+						custom="true"
+					/>
 				</div>
 				<gf-form-switch
 					class="gf-form" label-class="width-8"
@@ -83,14 +97,14 @@
 				</div>
 				<div class="gf-form">
 				  <label class="gf-form-label">
-				    <a class="pointer"
+				    <a
+							class="pointer"
 							ng-click="ctrl.panel.columnsStylesManager.removeColumnStyle($index)"
 						>
 				      <i class="fa fa-trash"></i>
 				    </a>
 				  </label>
 				</div>
-
 			</div>
 
 			<div class="gf-form-inline" ng-if="style.type === 'number'">
@@ -98,26 +112,47 @@
 					<label class="gf-form-label width-8">Unit</label>
 				</div>
 				<div class="gf-form">
-					<div class="gf-form-dropdown-typeahead" ng-model="style.unit" dropdown-typeahead2="ctrl.unitFormats" dropdown-typeahead-on-select="ctrl.setUnitFormat(style, $subItem)"></div>
-				</div>
-				<div class="gf-form">
-					<label class="gf-form-label">Decimals</label>
-					<input type="number" class="gf-form-input width-4" data-placement="right" ng-model="style.decimals" ng-change="ctrl.render()" ng-model-onblur>
-        </div>
-				<div class="gf-form">
-          <label class="gf-form-label">Coloring</label>
-          <div class="gf-form-select-wrapper">
-            <select class="gf-form-input" ng-model="style.colorMode" ng-options="c.value as c.text for c in ctrl.colorModes" ng-change="ctrl.render()"></select>
-          </div>
-        </div>
-        <div class="gf-form gf-form--grow">
-          <div class="gf-form-label gf-form-label--grow"></div>
-        </div>
+					<div
+						class="gf-form-dropdown-typeahead"
+						ng-model="style.unit"
+						dropdown-typeahead2="ctrl.unitFormats"
+						dropdown-typeahead-on-select="ctrl.setUnitFormat(style, $subItem)"
+					/>
+					<div class="gf-form">
+						<label class="gf-form-label">Decimals</label>
+						<input
+							type="number"
+							class="gf-form-input width-4"
+							data-placement="right"
+							ng-model="style.decimals"
+							ng-change="ctrl.render()"
+							ng-model-onblur
+						/>
+	        </div>
+					<div class="gf-form">
+	          <label class="gf-form-label">Coloring</label>
+	          <div class="gf-form-select-wrapper">
+	            <select
+								class="gf-form-input"
+								ng-model="style.colorMode"
+								ng-options="c.value as c.text for c in ctrl.colorModes"
+								ng-change="ctrl.render()"
+							/>
+	          </div>
+	        </div>
+	        <div class="gf-form gf-form--grow">
+	          <div class="gf-form-label gf-form-label--grow"></div>
+	        </div>
       </div>
 
-      <div class="gf-form-inline" ng-if="style.type === 'number' && style.colorMode != null">
+      <div
+				class="gf-form-inline"
+				ng-if="style.type === 'number' && style.colorMode != null"
+			>
         <div class="gf-form max-width-17 offset-width-8">
-          <label class="gf-form-label width-8"> Thresholds<tip>Comma separated values</tip></label>
+          <label class="gf-form-label width-8">
+						Thresholds<tip>Comma separated values</tip>
+					</label>
           <input
 						type="text" class="gf-form-input"
 						ng-model="style.thresholds" placeholder="50,80"
@@ -127,13 +162,22 @@
         <div class="gf-form">
           <label class="gf-form-label width-5">Colors</label>
           <span class="gf-form-label">
-            <spectrum-picker ng-model="style.colors[0]" ng-change="ctrl.render()"></spectrum-picker>
+            <spectrum-picker
+							ng-model="style.colors[0]"
+							ng-change="ctrl.render()"
+						/>
           </span>
           <span class="gf-form-label">
-            <spectrum-picker ng-model="style.colors[1]" ng-change="ctrl.render()"></spectrum-picker>
+            <spectrum-picker
+							ng-model="style.colors[1]"
+							ng-change="ctrl.render()"
+						/>
           </span>
           <span class="gf-form-label">
-            <spectrum-picker ng-model="style.colors[2]" ng-change="ctrl.render()"></spectrum-picker>
+            <spectrum-picker
+							ng-model="style.colors[2]"
+							ng-change="ctrl.render()"
+						/>
           </span>
         </div>
         <div class="gf-form gf-form--grow">
@@ -142,12 +186,34 @@
           </div>
         </div>
       </div>
-
     </div>
+
+		<div class="gf-form-inline" ng-if="style.type === 'custom'">
+
+			<label class="gf-form-label">Render function</label>
+			<textarea
+				type="string"
+				class="gf-form-input"
+				data-placement="right"
+				ng-model="style.renderFunction"
+				ng-change="ctrl.render()"
+				ng-model-onblur
+			>
+			function(v) {
+				return '~' + v + '!';
+			}
+
+			</textarea>
+
+		</div>
+
   </div>
   <div class="gf-form-button">
-    <button class="btn btn-inverse" ng-click="ctrl.panel.columnsStylesManager.addColumnStyle()">
-      <i class="fa fa-plus"></i>&nbsp;Add column style rule
+    <button
+			class="btn btn-inverse"
+			ng-click="ctrl.panel.columnsStylesManager.addColumnStyle()"
+		>
+      <i class="fa fa-plus"></i> Add column style rule
     </button>
   </div>
 </div>

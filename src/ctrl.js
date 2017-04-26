@@ -152,6 +152,10 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
         value: 'date'
       },
       {
+        text: 'Custom',
+        value: 'custom'
+      },
+      {
         text: 'Hidden',
         value: 'hidden'
       }
