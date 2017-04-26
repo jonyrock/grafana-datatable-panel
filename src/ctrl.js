@@ -186,18 +186,7 @@ export class DatatablePanelCtrl extends MetricsPanelCtrl {
       delete this.panel.fields;
     }
 
-    console.log('def1');
-    console.log(this.panel.colorder);
-
-    console.log('def2');
-    console.log(this.panel.colorder2);
-
     _.defaults(this.panel, panelDefaults);
-
-    console.log('SHIT BRO');
-    console.log(this.panel.colorder);
-
-    console.log(this.panel);
 
     CSSStylesManager.resolveTheme(this.panel.datatableTheme, this.panelPath);
     this.dataLoaded = true;

@@ -1,4 +1,3 @@
-//console.log(jquery);
 import jquery from 'jquery';
 
 import kbn from 'app/core/utils/kbn';
