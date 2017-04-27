@@ -1,11 +1,15 @@
-
-import _ from 'lodash';
-import moment from 'moment';
 import flatten from 'app/core/utils/flatten';
 import TimeSeries from 'app/core/time_series2';
 import TableModel from 'app/core/table_model';
 
-var transformers = {};
+import moment from 'moment';
+
+
+const TRANSFORM_ERROR = 'Query result is not in table format, ' +
+                        'try using another transform.';
+
+
+export var transformers = {};
 
 transformers.timeseries_to_rows = {
   description: 'Time series to rows',
@@ -41,12 +45,7 @@ transformers.timeseries_to_columns = {
     var points = {};
 
     for (var i = 0; i < data.length; i++) {
-
       var series = data[i];
-
-      if(panel.columnsStylesManager.isHidden(series.target)) {
-        continue;
-      }
 
       model.columns.push({text: series.target});
 
@@ -145,15 +144,14 @@ transformers.table = {
     if (!data || data.length === 0) {
       return;
     }
-
     if (data[0] === undefined) {
-      throw {message: 'Query result is not in table format, try using another transform.'};
+      throw { message: TRANSFORM_ERROR };
     }
     if (data[0].type === undefined) {
-      throw {message: 'Query result is not in table format, try using another transform.'};
+      throw { message: TRANSFORM_ERROR };
     }
     if (data[0].type !== 'table') {
-      throw {message: 'Query result is not in table format, try using another transform.'};
+      throw { message: TRANSFORM_ERROR };
     }
     model.columns = data[0].columns;
     model.rows = data[0].rows;
@@ -221,8 +219,51 @@ transformers.json = {
   }
 };
 
+function filterHiddenCols(dataAll, columnsStylesManager) {
+  if(columnsStylesManager === undefined) {
+    throw new Error('columnsStylesManager is undefined');
+  }
+
+  var data = dataAll[0];
+
+  var cols = [];
+  var rows = [];
+  var hiddenIndexes = [];
+  for(let i = 0; i < data.columns.length; i++) {
+    var col = data.columns[i];
+    if(columnsStylesManager.isHidden(col.text)) {
+      hiddenIndexes.push(i);
+    } else {
+      cols.push(col);
+    }
+  }
+
+  for(let i = 0; i < data.rows.length; i++) {
+    var row = data.rows[i];
+    var resRow = [];
+    var hi = 0;
+    for(let j = 0; j < row.length; j++) {
+      if(hi < hiddenIndexes.length && hiddenIndexes[hi] == j) {
+        hi++;
+      } else {
+        resRow.push(row[j]);
+      }
+    }
+    rows.push(resRow);
+  }
+
+  var cdata = {
+    columns: cols,
+    rows: rows
+  };
+
+  _.defaults(cdata, data);
+
+  return [cdata];
+}
+
 // TODO: remove dep to panel
-function transformDataToTable(data, panel) {
+export function transformDataToTable(data, panel) {
   var model = new TableModel();
 
   if (!data || data.length === 0) {
@@ -231,11 +272,11 @@ function transformDataToTable(data, panel) {
 
   var transformer = transformers[panel.transform];
   if (!transformer) {
-    throw {message: 'Transformer ' + panel.transformer + ' not found'};
+    throw { message: 'Transformer ' + panel.transformer + ' not found' };
   }
 
-  transformer.transform(data, panel, model);
+  var cdata = filterHiddenCols(data, panel.columnsStylesManager);
+
+  transformer.transform(cdata, panel, model);
   return model;
 }
-
-export {transformers, transformDataToTable};
