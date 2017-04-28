@@ -31,11 +31,11 @@ export default class Editor {
   }
 
   _exitEditMode() {
-    var ord = this.ctrl.renderer.colorder;
-    if(!_.isEqual(ord), this.ctrl.panel.colorder) {
-      this.ctrl.panel.colorder = ord;
-      this.ctrl.render();
-    }
+    // var ord = this.ctrl.renderer.colorder;
+    // if(!_.isEqual(ord), this.ctrl.panel.colorder) {
+    //   this.ctrl.panel.colorder = ord;
+    //   this.ctrl.render();
+    // }
   }
 
 }

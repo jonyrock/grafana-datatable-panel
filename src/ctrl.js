@@ -26,7 +26,6 @@ const panelDefaults = {
     desc: true
   },
   colorder: [],
-  colorder2: [],
   // TODO: group with CSSStyles
   datatableTheme: 'basic_theme',
   rowNumbersEnabled: false,

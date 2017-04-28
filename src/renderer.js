@@ -11,7 +11,6 @@ export class DatatableRenderer {
   constructor(editMode, panel, table, isUtc, sanitize, colorder) {
 
     this.editMode = editMode;
-    this._colorder = colorder;
 
     this.formatters = [];
     this.colorState = {};
@@ -21,14 +20,30 @@ export class DatatableRenderer {
     this.isUtc = isUtc;
     this.sanitize = sanitize;
 
-    if(this._colorder !== undefined) {
-      while(this._colorder.length < table.columns.length) {
-        this._colorder.push(this._colorder.length);
-      }
-    }
+    this._colorder = DatatableRenderer.nomalizeColorder(
+      colorder, table.columns.length
+    );
 
   }
 
+  static nomalizeColorder(colorder, size) {
+    var res = _.clone(colorder);
+    if(res === undefined) {
+      res = [];
+    }
+    while(res.length < size) {
+      res.push(res.length);
+    }
+    if(res.length > size) {
+      res = _.take(res, size);
+    }
+    res = _.map(res, (e,i) => ({ e:e, i:i }));
+    res = _.sortBy(res, 'e');
+    res = _.map(res, (ei,i) => ({ e: i, i: ei.i }));
+    res = _.sortBy(res, 'i');
+    res = _.map(res, e => e.e);
+    return res;
+  }
 
   getColorForValue(value, style) {
     if (!style.thresholds) {
@@ -401,22 +416,12 @@ export class DatatableRenderer {
       "order": orderSetting
     };
 
-    if(this.editMode) {
-      if(this._colorder) {
-        tableOptions.colReorder = {
-          order: this._colorder
-        };
-      } else {
-        tableOptions.colReorder = true;
-      }
+    if(this._colorder) {
+      tableOptions.colReorder = { order: this._colorder };
     } else {
-      tableOptions.colReorder = {
-        realtime: false
-      };
-      if(this._colorder) {
-        tableOptions.colReorder.order = this._colorder;
-      }
+      tableOptions.colReorder = true;
     }
+
     if (this.panel.scroll) {
       tableOptions.paging = false;
       tableOptions.scrollY = panelHeight;
@@ -426,6 +431,10 @@ export class DatatableRenderer {
     }
     var newDT = $('#datatable-panel-table-' + this.panel.id).DataTable(tableOptions);
     _this.dt = newDT;
+
+    newDT.on('column-reorder', function(e, settings, details) {
+      _this.panel.colorder = _this.dt.colReorder.order();
+    });
 
     // enable compact mode
     if (this.panel.compactRowsEnabled) {

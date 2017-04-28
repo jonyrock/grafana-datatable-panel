@@ -1,12 +1,12 @@
 {
     "type": "panel",
     "name": "Datatable Panel",
-    "id": "briangann-datatable-panel",
+    "id": "jonyrock-datatable-panel",
     "info": {
         "description": "Datatable panel for Grafana",
         "author": {
-            "name": "Brian Gann (bkgann@gmail.com)",
-            "url": "https://github.com/briangann"
+          "name": "Brian Gann (bkgann@gmail.com)",
+          "url": "https://github.com/briangann"
         },
         "keywords": ["table", "panel"],
         "logos": {
