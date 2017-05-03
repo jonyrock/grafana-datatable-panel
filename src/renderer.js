@@ -119,12 +119,6 @@ export class DatatableRenderer {
       };
     }
 
-    if (style.type === 'custom') {
-      var src = '(' + style.renderFunction +')';
-      /* jshint ignore:start */
-      return eval(src);
-      /* jshint ignore:end */
-    }
     return (value) => {
       return this.defaultCellFormatter(value, style);
     };
@@ -355,18 +349,28 @@ export class DatatableRenderer {
     }
     for (let i = 0; i < this.table.columns.length; i++) {
       /* jshint loopfunc: true */
+      var col = this.table.columns[i];
       columns.push({
-        title: this.table.columns[i].text,
-        type: this.table.columns[i].type
+        title: col.text,
+        type: col.type
       });
-      columnDefs.push({
+      var colModifer = {
         "targets": i + rowNumberOffset,
-        "createdCell": this.createdCell.bind(this)
-      });
+        "createdCell": this.createdCell.bind(this),
+      };
+
+      var style = this.panel.columnsStylesManager.findStyle(col.text);
+      if(style && style.type === 'custom') {
+        /* jshint ignore:start */
+        var src = '(' + style.renderFunction +')';
+        colModifer.render = eval(src);
+        /* jshint ignore:end */
+      }
+
+      columnDefs.push(colModifer);
     }
 
     try {
-      var should_destroy = false;
       if ($.fn.dataTable.isDataTable('#datatable-panel-table-' + this.panel.id)) {
         var aDT = $('#datatable-panel-table-' + this.panel.id).DataTable();
         aDT.destroy();

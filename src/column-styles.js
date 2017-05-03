@@ -8,8 +8,8 @@ Array.prototype.swap = function(p, q) {
 };
 
 const DEFAULT_RENDER_FUNCTION =
-`function(v) {
-  return '~' + v + '~';
+`function(data, type, full, meta) {
+  return '<a href="'+data+'">Download</a>';
 }
 `;
 

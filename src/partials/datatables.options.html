@@ -11,32 +11,35 @@
 			</div>
 		</div>
 		<div class="gf-form">
-			<gf-form-switch class="gf-form" label-class="width-8"
+			<gf-form-switch
+				class="gf-form"
+				label-class="width-8"
 			  label="Scroll"
 				tooltip="Scroll instead of paging"
-				checked="ctrl.panel.scroll" on-change="ctrl.render()"></gf-form-switch>
+				checked="ctrl.panel.scroll"
+				on-change="ctrl.render()"
+			/>
 		</div>
-
-			<div ng-if="!ctrl.panel.scroll">
-				<div class="gf-form max-width-17">
-					<label class="gf-form-label width-8">Rows Per Page</label>
-					<input type="number" class="gf-form-input"
-						placeholder="5" data-placement="right"
-						ng-model="ctrl.panel.rowsPerPage"
+		<div ng-if="!ctrl.panel.scroll">
+			<div class="gf-form max-width-17">
+				<label class="gf-form-label width-8">Rows Per Page</label>
+				<input type="number" class="gf-form-input"
+					placeholder="5" data-placement="right"
+					ng-model="ctrl.panel.rowsPerPage"
+					ng-change="ctrl.render()"
+					ng-model-onblur>
+			</div>
+			<div class="gf-form">
+				<label class="gf-form-label width-8">Paging Type</label>
+				<div class="gf-form-select-wrapper max-width-35">
+					<select
+						class="gf-form-input" ng-model="ctrl.panel.datatablePagingType"
+						ng-options="f.value as f.text for f in ctrl.panel.pagingTypes"
 						ng-change="ctrl.render()"
-						ng-model-onblur>
-				</div>
-				<div class="gf-form">
-					<label class="gf-form-label width-8">Paging Type</label>
-					<div class="gf-form-select-wrapper max-width-35">
-						<select
-							class="gf-form-input" ng-model="ctrl.panel.datatablePagingType"
-							ng-options="f.value as f.text for f in ctrl.panel.pagingTypes"
-							ng-change="ctrl.render()"
-						/>
-					</div>
+					/>
 				</div>
 			</div>
+		</div>
 	</div>
 
 	<div class="section gf-form-group">
