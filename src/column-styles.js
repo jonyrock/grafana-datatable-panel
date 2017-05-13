@@ -1,11 +1,11 @@
 import kbn from 'app/core/utils/kbn';
 
-Array.prototype.swap = function(p, q) {
-  var t = this[p];
-  this[p] = this[q];
-  this[q] = t;
-  return this;
-};
+function swap(xs, p, q) {
+  var t = xs[p];
+  xs[p] = xs[q];
+  xs[q] = t;
+  return xs;
+}
 
 const DEFAULT_RENDER_FUNCTION =
 `function(data, type, full, meta) {
@@ -68,15 +68,15 @@ export class ColumnsStylesManager {
   }
 
   moveUpColumnStyle(index) {
-    this.styles.swap(index - 1, index);
+    swap(this.styles, index - 1, index);
   }
 
   moveDownColumnStyle(index) {
-    this.styles.swap(index + 1, index);
+    swap(this.styles, index + 1, index);
   }
 
   invertColorOrder(index) {
-    this.styles[index].colors.swap(0, 2);
+    swap(this.styles[index].colors, 0, 2);
   }
 
 }
