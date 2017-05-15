@@ -1,5 +1,3 @@
-import jquery from 'jquery';
-
 import kbn from 'app/core/utils/kbn';
 import moment from 'moment';
 
@@ -9,13 +7,13 @@ import ColReorder from './external/datatables-colreorder/js/dataTables.colReorde
 
 export class DatatableRenderer {
   constructor(editMode, panel, table, isUtc, sanitize, colorder) {
-
     this.editMode = editMode;
 
     this.formatters = [];
     this.colorState = {};
     this.panel = panel;
     this.table = table;
+    DatatableRenderer._filterHiddenCols(this.table, panel.columnsStylesManager);
 
     this.isUtc = isUtc;
     this.sanitize = sanitize;
@@ -23,7 +21,6 @@ export class DatatableRenderer {
     this._colorder = DatatableRenderer.nomalizeColorder(
       colorder, table.columns.length
     );
-
   }
 
   static nomalizeColorder(colorder, size) {
@@ -43,6 +40,42 @@ export class DatatableRenderer {
     res = _.sortBy(res, 'i');
     res = _.map(res, e => e.e);
     return res;
+  }
+
+  static _filterHiddenCols(table, columnsStylesManager) {
+    if(columnsStylesManager === undefined) {
+      throw new Error('columnsStylesManager is undefined');
+    }
+
+    var cols = [];
+    var rows = [];
+    var hiddenIndexes = [];
+    for(let i = 0; i < table.columns.length; i++) {
+      var col = table.columns[i];
+      if(columnsStylesManager.isHidden(col.text)) {
+        hiddenIndexes.push(i);
+      } else {
+        cols.push(col);
+      }
+    }
+
+    for(let i = 0; i < table.rows.length; i++) {
+      var row = table.rows[i];
+      var resRow = [];
+      var hi = 0;
+      for(let j = 0; j < row.length; j++) {
+        if(hi < hiddenIndexes.length && hiddenIndexes[hi] == j) {
+          hi++;
+        } else {
+          resRow.push(row[j]);
+        }
+      }
+      rows.push(resRow);
+    }
+
+    table.columns = cols;
+    table.rows = rows;
+
   }
 
   getColorForValue(value, style) {
@@ -327,7 +360,11 @@ export class DatatableRenderer {
    * @return {[Boolean]} True if loaded without errors
    */
   render() {
+    // TODO: show special message if no data
     if (this.table.columns.length === 0) {
+      return;
+    }
+    if (this.table.rows.length === 0) {
       return;
     }
     var columns = [];
@@ -441,25 +478,26 @@ export class DatatableRenderer {
     });
 
     // enable compact mode
+    var $datatable = $('#datatable-panel-table-' + this.panel.id);
     if (this.panel.compactRowsEnabled) {
-      $('#datatable-panel-table-' + this.panel.id).addClass( 'compact' );
+      $datatable.addClass('compact');
     }
     // enable striped mode
     if (this.panel.stripedRowsEnabled) {
-      $('#datatable-panel-table-' + this.panel.id).addClass( 'stripe' );
+      $datatable.addClass('stripe');
     }
     if (this.panel.hoverEnabled) {
-      $('#datatable-panel-table-' + this.panel.id).addClass( 'hover' );
+      $datatable.addClass('hover');
     }
     if (this.panel.orderColumnEnabled) {
-      $('#datatable-panel-table-' + this.panel.id).addClass( 'order-column' );
+      $datatable.addClass('order-column');
     }
     // these two are mutually exclusive
     if (this.panel.showCellBorders) {
-      $('#datatable-panel-table-' + this.panel.id).addClass( 'cell-border' );
+      $datatable.addClass('cell-border');
     } else {
       if (this.panel.showRowBorders) {
-        $('#datatable-panel-table-' + this.panel.id).addClass( 'row-border' );
+        $datatable.addClass('row-border');
       }
     }
     if (!this.panel.scroll) {

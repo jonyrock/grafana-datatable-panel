@@ -402,9 +402,8 @@ class DatatablePanelCtrl extends MetricsPanelCtrl {
     this.panel.columnsStylesManager.invertColorOrder(index);
     this.render();
   }
-
 }
-DatatablePanelCtrl.templateUrl = 'partials/template.html';
 
+DatatablePanelCtrl.templateUrl = 'partials/template.html';
 
 export { DatatablePanelCtrl as PanelCtrl };

@@ -219,48 +219,7 @@ transformers.json = {
   }
 };
 
-function filterHiddenCols(dataAll, columnsStylesManager) {
-  if(columnsStylesManager === undefined) {
-    throw new Error('columnsStylesManager is undefined');
-  }
 
-  var data = dataAll[0];
-
-  var cols = [];
-  var rows = [];
-  var hiddenIndexes = [];
-  for(let i = 0; i < data.columns.length; i++) {
-    var col = data.columns[i];
-    if(columnsStylesManager.isHidden(col.text)) {
-      hiddenIndexes.push(i);
-    } else {
-      cols.push(col);
-    }
-  }
-
-  for(let i = 0; i < data.rows.length; i++) {
-    var row = data.rows[i];
-    var resRow = [];
-    var hi = 0;
-    for(let j = 0; j < row.length; j++) {
-      if(hi < hiddenIndexes.length && hiddenIndexes[hi] == j) {
-        hi++;
-      } else {
-        resRow.push(row[j]);
-      }
-    }
-    rows.push(resRow);
-  }
-
-  var cdata = {
-    columns: cols,
-    rows: rows
-  };
-
-  _.defaults(cdata, data);
-
-  return [cdata];
-}
 
 // TODO: remove dep to panel
 export function transformDataToTable(data, panel) {
@@ -275,10 +234,6 @@ export function transformDataToTable(data, panel) {
     throw { message: 'Transformer ' + panel.transformer + ' not found' };
   }
 
-  console.log('Transformer ' + transformer);
-
-  var cdata = filterHiddenCols(data, panel.columnsStylesManager);
-
-  transformer.transform(cdata, panel, model);
+  transformer.transform(data, panel, model);
   return model;
 }
