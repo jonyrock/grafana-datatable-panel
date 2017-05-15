@@ -18,9 +18,9 @@ transformers.timeseries_to_rows = {
   },
   transform: function(data, panel, model) {
     model.columns = [
-      {text: 'Time', type: 'date'},
-      {text: 'Metric'},
-      {text: 'Value'},
+      { text: 'Time', type: 'date' },
+      { text: 'Metric' },
+      { text: 'Value' },
     ];
 
     for (var i = 0; i < data.length; i++) {
@@ -39,7 +39,7 @@ transformers.timeseries_to_columns = {
     return [];
   },
   transform: function(data, panel, model) {
-    model.columns.push({text: 'Time', type: 'date'});
+    model.columns.push({ text: 'Time', type: 'date' });
 
     // group by time
     var points = {};
@@ -47,7 +47,7 @@ transformers.timeseries_to_columns = {
     for (var i = 0; i < data.length; i++) {
       var series = data[i];
 
-      model.columns.push({text: series.target});
+      model.columns.push({ text: series.target });
 
       for (var y = 0; y < series.datapoints.length; y++) {
         var dp = series.datapoints[y];
@@ -73,24 +73,24 @@ transformers.timeseries_aggregations = {
   description: 'Time series aggregations',
   getColumns: function() {
     return [
-      {text: 'Avg', value: 'avg'},
-      {text: 'Min', value: 'min'},
-      {text: 'Max', value: 'max'},
-      {text: 'Total', value: 'total'},
-      {text: 'Current', value: 'current'},
-      {text: 'Count', value: 'count'},
+      { text: 'Avg',     value: 'avg'     },
+      { text: 'Min',     value: 'min'     },
+      { text: 'Max',     value: 'max'     },
+      { text: 'Total',   value: 'total'   },
+      { text: 'Current', value: 'current' },
+      { text: 'Count',   value: 'count'   },
     ];
   },
   transform: function(data, panel, model) {
     var i, y;
-    model.columns.push({text: 'Metric'});
+    model.columns.push({ text: 'Metric' });
 
     if (panel.columns.length === 0) {
-      panel.columns.push({text: 'Avg', value: 'avg'});
+      panel.columns.push({ text: 'Avg', value: 'avg' });
     }
 
     for (i = 0; i < panel.columns.length; i++) {
-      model.columns.push({text: panel.columns[i].text});
+      model.columns.push({ text: panel.columns[i].text });
     }
 
     for (i = 0; i < data.length; i++) {
@@ -184,17 +184,17 @@ transformers.json = {
     }
 
     return _.map(names, function(value, key) {
-      return {text: key, value: key};
+      return { text: key, value: key };
     });
   },
   transform: function(data, panel, model) {
     var i, y, z;
     for (i = 0; i < panel.columns.length; i++) {
-      model.columns.push({text: panel.columns[i].text});
+      model.columns.push({ text: panel.columns[i].text });
     }
 
     if (model.columns.length === 0) {
-      model.columns.push({text: 'JSON'});
+      model.columns.push({ vtext: 'JSON' });
     }
 
     for (i = 0; i < data.length; i++) {
@@ -274,6 +274,8 @@ export function transformDataToTable(data, panel) {
   if (!transformer) {
     throw { message: 'Transformer ' + panel.transformer + ' not found' };
   }
+
+  console.log('Transformer ' + transformer);
 
   var cdata = filterHiddenCols(data, panel.columnsStylesManager);
 
