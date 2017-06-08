@@ -3,7 +3,8 @@ import moment from 'moment';
 
 import DataTable from './libs/datatables.net/js/jquery.dataTables.min.js';
 import './external/datatables-colreorder/js/dataTables.colReorder.js';
-import './external/dataTables.responsive.js';
+import './external/dataTables-responsive/dataTables.responsive.js';
+
 
 
 export class DatatableRenderer {
@@ -548,3 +549,6 @@ export class DatatableRenderer {
   }
 
 }
+
+
+import './external/dataTables-responsive/dataTables.responsive.css!';
