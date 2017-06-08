@@ -2,7 +2,8 @@ import kbn from 'app/core/utils/kbn';
 import moment from 'moment';
 
 import DataTable from './libs/datatables.net/js/jquery.dataTables.min.js';
-import ColReorder from './external/datatables-colreorder/js/dataTables.colReorder.js';
+import './external/datatables-colreorder/js/dataTables.colReorder.js';
+import './external/dataTables.responsive.js';
 
 
 export class DatatableRenderer {
@@ -408,7 +409,7 @@ export class DatatableRenderer {
     }
 
     try {
-      if ($.fn.dataTable.isDataTable('#datatable-panel-table-' + this.panel.id)) {
+      if ($.fn.dataTable.is('#datatable-panel-table-' + this.panel.id)) {
         var aDT = $('#datatable-panel-table-' + this.panel.id).DataTable();
         aDT.destroy();
         $('#datatable-panel-table-' + this.panel.id).empty();
@@ -440,6 +441,7 @@ export class DatatableRenderer {
       orderSetting = [[0, 'asc']];
     }
 
+    console.log('tableOptions+++');
     var tableOptions = {
       "lengthMenu": [
         [5, 10, 25, 50, 75, 100, -1],
@@ -454,7 +456,8 @@ export class DatatableRenderer {
       columns: columns,
       columnDefs: columnDefs,
       "search": { "regex": true },
-      "order": orderSetting
+      "order": orderSetting,
+      responsive: true
     };
 
     if(this._colorder) {
