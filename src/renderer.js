@@ -409,7 +409,7 @@ export class DatatableRenderer {
     }
 
     try {
-      if ($.fn.dataTable.is('#datatable-panel-table-' + this.panel.id)) {
+      if ($.fn.dataTable.isDataTable('#datatable-panel-table-' + this.panel.id)) {
         var aDT = $('#datatable-panel-table-' + this.panel.id).DataTable();
         aDT.destroy();
         $('#datatable-panel-table-' + this.panel.id).empty();
@@ -441,7 +441,6 @@ export class DatatableRenderer {
       orderSetting = [[0, 'asc']];
     }
 
-    console.log('tableOptions+++');
     var tableOptions = {
       "lengthMenu": [
         [5, 10, 25, 50, 75, 100, -1],
@@ -456,8 +455,7 @@ export class DatatableRenderer {
       columns: columns,
       columnDefs: columnDefs,
       "search": { "regex": true },
-      "order": orderSetting,
-      responsive: true
+      "order": orderSetting
     };
 
     if(this._colorder) {
@@ -473,7 +471,11 @@ export class DatatableRenderer {
       tableOptions.paging = true;
       tableOptions.pagingType = this.panel.datatablePagingType;
     }
-    var newDT = $('#datatable-panel-table-' + this.panel.id).DataTable(tableOptions);
+
+    var $datatable = $('#datatable-panel-table-' + this.panel.id);
+    var newDT = $datatable.DataTable(tableOptions);
+
+    new $.fn.dataTable.Responsive(newDT, { details: true });
     _this.dt = newDT;
 
     newDT.on('column-reorder', function(e, settings, details) {
@@ -481,7 +483,7 @@ export class DatatableRenderer {
     });
 
     // enable compact mode
-    var $datatable = $('#datatable-panel-table-' + this.panel.id);
+
     if (this.panel.compactRowsEnabled) {
       $datatable.addClass('compact');
     }
