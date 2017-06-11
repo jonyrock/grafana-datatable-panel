@@ -23,11 +23,13 @@
 		<div ng-if="!ctrl.panel.scroll">
 			<div class="gf-form max-width-17">
 				<label class="gf-form-label width-8">Rows Per Page</label>
-				<input type="number" class="gf-form-input"
+				<input
+					type="number" class="gf-form-input"
 					placeholder="5" data-placement="right"
 					ng-model="ctrl.panel.rowsPerPage"
 					ng-change="ctrl.render()"
-					ng-model-onblur>
+					ng-model-onblur
+				>
 			</div>
 			<div class="gf-form">
 				<label class="gf-form-label width-8">Paging Type</label>

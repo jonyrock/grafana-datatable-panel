@@ -38,7 +38,6 @@
 		<div ng-repeat="style in ctrl.panel.styles">
 
 			<div class="gf-form-inline">
-
 				<div class="gf-form" ng-if="!($first && $last)">
 					<label class="gf-form-label sort-button">
 						<a
@@ -57,7 +56,6 @@
 						</a>
 					</label>
 				</div>
-
 				<div class="gf-form">
 					<label class="gf-form-label">Name or regex</label>
 					<input
@@ -94,6 +92,19 @@
 				/>
 				<div class="gf-form gf-form--grow">
 					<div class="gf-form-label gf-form-label--grow"></div>
+				</div>
+				<div class="gf-form">
+					<label class="gf-form-label">
+						Width:
+					</label>
+				  <label class="gf-form-label" style="padding:0">
+						<input
+							type="number" class="gf-form-input"
+							ng-model="style.width"
+							ng-blur="ctrl.render()"
+							ng-model-onblur
+						/>
+				  </label>
 				</div>
 				<div class="gf-form">
 				  <label class="gf-form-label">

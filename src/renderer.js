@@ -6,7 +6,6 @@ import './external/datatables-colreorder/js/dataTables.colReorder.js';
 import './external/dataTables-responsive/dataTables.responsive.js';
 
 
-
 export class DatatableRenderer {
   constructor(editMode, panel, table, isUtc, sanitize, colorder) {
     this.editMode = editMode;
@@ -20,12 +19,12 @@ export class DatatableRenderer {
     this.isUtc = isUtc;
     this.sanitize = sanitize;
 
-    this._colorder = DatatableRenderer.nomalizeColorder(
+    this._colorder = DatatableRenderer._nomalizeColorder(
       colorder, table.columns.length
     );
   }
 
-  static nomalizeColorder(colorder, size) {
+  static _nomalizeColorder(colorder, size) {
     var res = _.clone(colorder);
     if(res === undefined) {
       res = [];
@@ -194,7 +193,9 @@ export class DatatableRenderer {
     for (let i = 0; i < this.panel.styles.length; i++) {
       let style = this.panel.styles[i];
       let column = this.table.columns[columnNumber];
-      if (column === undefined) break;
+      if (column === undefined) {
+        break;
+      }
       var regex = kbn.stringToJsRegex(style.pattern);
       if (column.text.match(regex)) {
         colStyle = style;
@@ -207,12 +208,15 @@ export class DatatableRenderer {
   createdCell(td, cellData, rowData, row, col) {
     // set the fontsize for the cell
     $(td).css('font-size', this.panel.fontSize);
+
     // undefined types should have numerical data, any others are already formatted
     let actualColumn = col;
     if (this.panel.rowNumbersEnabled) {
       actualColumn -= 1;
     }
-    if (this.table.columns[actualColumn].type !== undefined) return;
+    if (this.table.columns[actualColumn].type !== undefined) {
+      return;
+    }
     // for coloring rows, get the "worst" threshold
     var rowColor = null;
     var color = null;
@@ -221,7 +225,9 @@ export class DatatableRenderer {
     if (this.colorState.row) {
       // run all of the rowData through threshold check, get the "highest" index
       // and use that for the entire row
-      if (rowData === null) return;
+      if (rowData === null) {
+        return;
+      }
       rowColorIndex = -1;
       rowColorData = null;
       rowColor = this.colorState.row;
@@ -319,6 +325,7 @@ export class DatatableRenderer {
     var colorIndex = null;
     let colStyle = null;
     let value = null;
+
     // check if the content has a numeric value after the split
     if (!isNaN(items[0])) {
       // run value through threshold function
@@ -405,6 +412,11 @@ export class DatatableRenderer {
         colModifer.render = eval(src);
         /* jshint ignore:end */
       }
+      if(style && style.width) {
+        console.log('found width for ' + col.text);
+        console.log(style.width);
+        colModifer.width = style.width + 'px';
+      }
 
       columnDefs.push(colModifer);
     }
@@ -456,7 +468,8 @@ export class DatatableRenderer {
       columns: columns,
       columnDefs: columnDefs,
       "search": { "regex": true },
-      "order": orderSetting
+      "order": orderSetting,
+      "autoWidth": false
     };
 
     if(this._colorder) {
