@@ -133,7 +133,12 @@ module.exports = function(grunt) {
 
     watch: {
       rebuild_all: {
-        files: ['src/**/*', 'README.md', '!src/node_modules/**', '!src/bower_components/**'],
+        files: [
+          'src/**/*',
+          'README.md',
+          '!src/node_modules/**',
+          '!src/bower_components/**'
+        ],
         tasks: ['default'],
         options: {spawn: false}
       },
@@ -141,10 +146,13 @@ module.exports = function(grunt) {
 
     babel: {
       options: {
-        ignore: ['**/bower_components/*','**/external/*'],
+        ignore: ['src/bower_components/*','src/external/*'],
         sourceMap: true,
         presets:  ["es2015"],
-        plugins: ['transform-es2015-modules-systemjs', "transform-es2015-for-of"],
+        plugins: [
+          'transform-es2015-modules-systemjs',
+          'transform-es2015-for-of'
+        ],
       },
       dist: {
         files: [{
