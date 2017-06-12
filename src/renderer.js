@@ -1,7 +1,7 @@
 import kbn from 'app/core/utils/kbn';
 import moment from 'moment';
 
-import DataTable from './libs/datatables.net/js/jquery.dataTables.min.js';
+import DataTable from './libs/datatables.net/js/jquery.dataTables.js';
 import './external/datatables-colreorder/js/dataTables.colReorder.js';
 import './external/dataTables-responsive/dataTables.responsive.js';
 
@@ -369,11 +369,19 @@ export class DatatableRenderer {
    * @return {[Boolean]} True if loaded without errors
    */
   render() {
-    // TODO: show special message if no data
-    if (this.table.columns.length === 0) {
-      return;
+    const tableHolderId = '#datatable-panel-table-' + this.panel.id;
+    try {
+      if ($.fn.dataTable.isDataTable(tableHolderId)) {
+        var aDT = $(tableHolderId).DataTable();
+        aDT.destroy();
+        $(tableHolderId).empty();
+      }
     }
-    if (this.table.rows.length === 0) {
+    catch(err) {
+      console.log("Exception: " + err.message);
+    }
+
+    if (this.panel.emptyData) {
       return;
     }
     var columns = [];
@@ -419,16 +427,7 @@ export class DatatableRenderer {
       columnDefs.push(colModifer);
     }
 
-    try {
-      if ($.fn.dataTable.isDataTable('#datatable-panel-table-' + this.panel.id)) {
-        var aDT = $('#datatable-panel-table-' + this.panel.id).DataTable();
-        aDT.destroy();
-        $('#datatable-panel-table-' + this.panel.id).empty();
-      }
-    }
-    catch(err) {
-      console.log("Exception: " + err.message);
-    }
+
     // sanity check
     // annotations come back as 4 items in an array per row.
     // If the first row content is undefined, then modify to empty
@@ -452,7 +451,6 @@ export class DatatableRenderer {
       orderSetting = [[0, 'asc']];
     }
 
-    console.log();
     var tableOptions = {
       "lengthMenu": [
         [5, 10, 25, 50, 75, 100, -1],
@@ -488,7 +486,7 @@ export class DatatableRenderer {
       tableOptions.pagingType = this.panel.datatablePagingType;
     }
 
-    var $datatable = $('#datatable-panel-table-' + this.panel.id);
+    var $datatable = $(tableHolderId);
     var newDT = $datatable.DataTable(tableOptions);
 
     new $.fn.dataTable.Responsive(newDT, { details: true });

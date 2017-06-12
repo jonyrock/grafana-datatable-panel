@@ -279,6 +279,8 @@ class DatatablePanelCtrl extends MetricsPanelCtrl {
   render() {
     this.table = Transformers.transformDataToTable(this.dataRaw, this.panel);
     this.table.sort(this.panel.sort);
+    this.panel.emptyData = this.table.rows.length === 0 ||
+                           this.table.columns.length === 0;
     return super.render(this.table);
   }
 
