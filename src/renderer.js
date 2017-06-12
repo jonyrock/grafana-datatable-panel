@@ -413,8 +413,6 @@ export class DatatableRenderer {
         /* jshint ignore:end */
       }
       if(style && style.width) {
-        console.log('found width for ' + col.text);
-        console.log(style.width);
         colModifer.width = style.width + 'px';
       }
 
