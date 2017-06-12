@@ -452,6 +452,7 @@ export class DatatableRenderer {
       orderSetting = [[0, 'asc']];
     }
 
+    console.log();
     var tableOptions = {
       "lengthMenu": [
         [5, 10, 25, 50, 75, 100, -1],
@@ -465,7 +466,10 @@ export class DatatableRenderer {
       data: formattedData,
       columns: columns,
       columnDefs: columnDefs,
-      "search": { "regex": true },
+      "search": {
+        "regex": true,
+        "search": this.panel.searchValue
+      },
       "order": orderSetting,
       "autoWidth": false
     };
@@ -492,6 +496,10 @@ export class DatatableRenderer {
 
     newDT.on('column-reorder', function(e, settings, details) {
       _this.panel.colorder = _this.dt.colReorder.order();
+    });
+
+    newDT.on('search.dt', function () {
+      _this.panel.searchValue = newDT.search();
     });
 
     // enable compact mode

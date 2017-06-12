@@ -29,6 +29,7 @@ const panelDefaults = {
   rowNumbersEnabled: false,
   infoEnabled: true,
   searchEnabled: true,
+  searchValue: '',
   showCellBorders: false,
   showRowBorders: true,
   hoverEnabled: true,
