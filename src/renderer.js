@@ -79,7 +79,7 @@ export class DatatableRenderer {
 
   }
 
-  getColorForValue(value, style) {
+  _getColorForValue(value, style) {
     if (!style.thresholds) {
       return null;
     }
@@ -92,7 +92,7 @@ export class DatatableRenderer {
   }
 
   // to determine the overall row color, the index of the threshold is needed
-  getColorIndexForValue(value, style) {
+  _getColorIndexForValue(value, style) {
     if (!style.thresholds) {
       return null;
     }
@@ -104,7 +104,7 @@ export class DatatableRenderer {
     return 0;
   }
 
-  defaultCellFormatter(v, style) {
+  _defaultCellFormatter(v, style) {
     if (v === null || v === void 0 || v === undefined) {
       return '';
     }
@@ -118,9 +118,9 @@ export class DatatableRenderer {
     }
   }
 
-  createColumnFormatter(style, column) {
+  _createColumnFormatter(style, column) {
     if (!style) {
-      return this.defaultCellFormatter;
+      return this._defaultCellFormatter;
     }
     if (style.type === 'date') {
       return v => {
@@ -144,41 +144,41 @@ export class DatatableRenderer {
           return '-';
         }
         if (_.isString(v)) {
-          return this.defaultCellFormatter(v, style);
+          return this._defaultCellFormatter(v, style);
         }
         if (style.colorMode) {
-          this.colorState[style.colorMode] = this.getColorForValue(v, style);
+          this.colorState[style.colorMode] = this._getColorForValue(v, style);
         }
         return valueFormatter(v, style.decimals, null);
       };
     }
 
     return (value) => {
-      return this.defaultCellFormatter(value, style);
+      return this._defaultCellFormatter(value, style);
     };
   }
 
-  formatColumnValue(colIndex, value) {
+  _formatColumnValue(colIndex, value) {
     if(!this.formatters[colIndex]) {
       let column = this.table.columns[colIndex];
       var style = this.panel.columnsStylesManager.findStyle(column.text);
       if(style) {
-        this.formatters[colIndex] = this.createColumnFormatter(style, column);
+        this.formatters[colIndex] = this._createColumnFormatter(style, column);
       } else {
-        this.formatters[colIndex] = this.defaultCellFormatter;
+        this.formatters[colIndex] = this._defaultCellFormatter;
       }
     }
     return this.formatters[colIndex](value);
   }
 
-  generateFormattedData(rowData) {
+  _generateFormattedData(rowData) {
     let formattedRowData = [];
     for (var y = 0; y < rowData.length; y++) {
       let row = this.table.rows[y];
       let cellData = [];
       //cellData.push('');
       for (var i = 0; i < this.table.columns.length; i++) {
-        cellData.push(this.formatColumnValue(i, row[i]));
+        cellData.push(this._formatColumnValue(i, row[i]));
       }
       if (this.panel.rowNumbersEnabled) {
         cellData.unshift('rowCounter');
@@ -188,7 +188,7 @@ export class DatatableRenderer {
     return formattedRowData;
   }
 
-  getStyleForColumn(columnNumber) {
+  _getStyleForColumn(columnNumber) {
     let colStyle = null;
     for (let i = 0; i < this.panel.styles.length; i++) {
       let style = this.panel.styles[i];
@@ -205,7 +205,7 @@ export class DatatableRenderer {
     return colStyle;
   }
 
-  createdCell(td, cellData, rowData, row, col) {
+  _createdCell(td, cellData, rowData, row, col) {
     // set the fontsize for the cell
     $(td).css('font-size', this.panel.fontSize);
 
@@ -236,7 +236,7 @@ export class DatatableRenderer {
       for (let columnNumber = 0; columnNumber < this.table.columns.length; columnNumber++) {
         // only columns of type undefined are checked
         if (this.table.columns[columnNumber].type === undefined) {
-          rowColorData =_this.getCellColors(
+          rowColorData =_this._getCellColors(
             this.colorState, columnNumber,
             rowData[columnNumber + rowNumberOffset]
           );
@@ -266,7 +266,7 @@ export class DatatableRenderer {
       for (let columnNumber = 0; columnNumber < _this.table.columns.length; columnNumber++) {
         // only columns of type undefined are checked
         if (this.table.columns[columnNumber].type === undefined) {
-          rowColorData = this.getCellColors(
+          rowColorData = this._getCellColors(
             this.colorState, columnNumber,
             rowData[columnNumber + rowNumberOffset]
           );
@@ -301,7 +301,7 @@ export class DatatableRenderer {
     //    1) Cell coloring is enabled, the above row color is skipped
     //    2) RowColumn is enabled, the above row color is process, but we also
     //    set the cell colors individually
-    var colorData = this.getCellColors(this.colorState, actualColumn, cellData);
+    var colorData = this._getCellColors(this.colorState, actualColumn, cellData);
     if ((this.colorState.cell) || (this.colorState.rowcolumn)) {
       if (colorData.color !== undefined) {
         $(td).css('color', colorData.color);
@@ -316,7 +316,7 @@ export class DatatableRenderer {
     }
   }
 
-  getCellColors(colorState, columnNumber, cellData) {
+  _getCellColors(colorState, columnNumber, cellData) {
     var items = cellData.split(/(\s+)/);
     // only color cell if the content is a number?
     var bgColor = null;
@@ -330,21 +330,21 @@ export class DatatableRenderer {
     if (!isNaN(items[0])) {
       // run value through threshold function
       value = parseFloat(items[0].replace(",", "."));
-      colStyle = this.getStyleForColumn(columnNumber);
+      colStyle = this._getStyleForColumn(columnNumber);
     }
     if (colStyle !== null) {
       // check color for either cell or row
       if ((colorState.cell) || (colorState.row) || (colorState.rowcolumn)){
         // bgColor = _this.colorState.cell;
-        bgColor = this.getColorForValue(value, colStyle);
-        bgColorIndex = this.getColorIndexForValue(value, colStyle);
+        bgColor = this._getColorForValue(value, colStyle);
+        bgColorIndex = this._getColorIndexForValue(value, colStyle);
         color = 'white';
       }
       // just the value color is set
       if (colorState.value) {
         //color = _this.colorState.value;
-        color = this.getColorForValue(value, colStyle);
-        colorIndex = this.getColorIndexForValue(value, colStyle);
+        color = this._getColorForValue(value, colStyle);
+        colorIndex = this._getColorIndexForValue(value, colStyle);
       }
     }
     return {
@@ -402,7 +402,7 @@ export class DatatableRenderer {
       });
       var colModifer = {
         "targets": i + rowNumberOffset,
-        "createdCell": this.createdCell.bind(this),
+        "_createdCell": this._createdCell.bind(this),
       };
 
       var style = this.panel.columnsStylesManager.findStyle(col.text);
@@ -440,7 +440,7 @@ export class DatatableRenderer {
       }
     }
     // pass the formatted rows into the datatable
-    var formattedData = this.generateFormattedData(this.table.rows);
+    var formattedData = this._generateFormattedData(this.table.rows);
 
     if (this.panel.rowNumbersEnabled) {
       // shift the data to the right
@@ -541,7 +541,7 @@ export class DatatableRenderer {
       let row = this.table.rows[y];
       let newRow = [];
       for (var i = 0; i < this.table.columns.length; i++) {
-        newRow.push(this.formatColumnValue(i, row[i]));
+        newRow.push(this._formatColumnValue(i, row[i]));
       }
       rows.push(newRow);
     }
